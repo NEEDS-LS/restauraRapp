@@ -1,0 +1,32 @@
+---
+title: "CARapp"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CARapp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+#Pacote CAR_APP
+
+Este documento descreve as funcionalidades do pacote "CARapp". O Objetivo do pacote é auxiliar na delimitação dos passivos ambientais  nas áreas de preservação permanentes (APPs) hídricas de propriedades rurais no território brasileiro.
+
+Com a promulgação da Lei de Proteção da Vegetação Nativa (LPVN - [Lei 12.651, de 25 de maio de 2012](http://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12651.htm), ou Novo Código Florestal) em 2012, a delimitação das Áreas de Preservação Permanentes (APPs) passíveis de serem restauradas foi alterada, e tornou-se dependente do tamanho das propriedades, baseado no número de módulos fiscais. Consequentemente,  informações referentes ao tamanho do módulo fiscal, que varia de município para município, e o tamanho da propriedade, que pode ser obtido através do [CAR](https://www.car.gov.br/) (Cadastro Ambiental Rural) são necessárias para a correta delimitação das áreas de passivo ambiental.
+
+Este pacote busca auxiliar exatamente nessa tarefa, particularmente focando no cálculo das APPs de cursos d'água de acordo com o tamanho das propriedades cadastradas no *Sistema Nacional de Cadastro Ambiental Rural* ([SICAR](https://www.car.gov.br/publico/imoveis/index)).
+
+Para a criação das áreas a serem restauradas é usado a hidrografia disponibilizada na base de dados da Fundação Brasileira para o Desenvolvimento Sustentável ([FBDS](https://www.fbds.org.br/), os dados podem ser encontrados no link <http://geo.fbds.org.br/>. 
+
+As informações cartográficas sobre o uso do solo podem ser de diversas fontes. O padrão é o dado também disponível na base de dados da [FBDS](https://www.fbds.org.br/), contudo outras fontes de dados como o MapBiomas, ou qualquer outro mapeamento, também podem ser utilizados para fornecer estas informações.
+
+
+```{r setup, eval=FALSE}
+library(CARapp)
+```

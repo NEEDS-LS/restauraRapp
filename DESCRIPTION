@@ -16,13 +16,17 @@ Authors@R:
 Maintainer: Júlio Cesar Araújo <jclaraujo92@gmail.com>
 Description: 
 Imports:
-    rgdal
-    raster
-    rgeos
-    abjutils
+    rgdal (>=1.5),
+    raster (>=3.4),
+    rgeos (>=0.5),
+    abjutils (>=0.3.1),
     sf (>=1.0)
 License: `use_mit_license("Júlio Cesar Araújo & Alexandre Camargo Martensen")`
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
