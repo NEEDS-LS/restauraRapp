@@ -1,0 +1,28 @@
+Package: CARapp
+Type: Package
+Title: Calculates the deficit of Permanente Protected Area along the water courses based on land use and property size (CAR)
+Version: 0.0.0.9001
+Authors@R:
+ c(person(given = "Julio",
+           family = "Araújo",
+           role = c("aut", "cre"),
+           email = "jclaraujo92@gmail.com",
+           comment = c(ORCID = "0000-0002-8173-0309")),
+ person(given = "Alexandre",
+           family = "Martensen",
+           role = c("aut", "cre"),
+           email = "acmartensen@gmail.com",
+           comment = c(ORCID = "0000-0001-9017-7480"))
+Maintainer: Júlio Cesar Araújo <jclaraujo92@gmail.com>
+Description: 
+Imports:
+    rgdal
+    raster
+    rgeos
+    abjutils
+    sf (>=1.0)
+License: `use_mit_license("Júlio Cesar Araújo & Alexandre Camargo Martensen")`
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
