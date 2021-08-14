@@ -29,6 +29,6 @@ restauradas em propriedades de tamanho médio, entre quatro e dez módulos fisca
 hidrográfias), retornando a intersecção deste buffer com o uso do solo
 }
 \examples{
-gMedia<-function(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,media,uso)
+unifica<-gMedia(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,media,uso)
 
 }
