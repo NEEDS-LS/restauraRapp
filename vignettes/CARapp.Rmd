@@ -30,3 +30,5 @@ As informações cartográficas sobre o uso do solo podem ser de diversas fontes
 ```{r setup, eval=FALSE}
 library(CARapp)
 ```
+
+Inclui aqui
