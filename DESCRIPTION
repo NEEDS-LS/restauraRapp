@@ -16,11 +16,11 @@ Authors@R:
 Maintainer: Júlio Cesar Araújo <jclaraujo92@gmail.com>
 Description: 
 Imports:
-    rgdal (>=1.5),
-    raster (>=3.4),
-    rgeos (>=0.5),
-    abjutils (>=0.3.1),
-    sf (>=1.0)
+    rgdal,
+    raster,
+    rgeos,
+    abjutils,
+    sf
 License: `use_mit_license("Júlio Cesar Araújo & Alexandre Camargo Martensen")`
 Encoding: UTF-8
 LazyData: true
