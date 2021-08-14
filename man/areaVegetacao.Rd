@@ -21,5 +21,4 @@ exemplo<-gMicro(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,micro,uso)
 
 area<-areaVegetacao(exemplo)
 
-#area = Valor em hectares da Ã¡rea coberta por vegetaÃ§Ã£o nativa.
 }
