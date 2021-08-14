@@ -21,7 +21,7 @@ Imports:
     rgeos,
     abjutils,
     sf
-License: `use_mit_license("Júlio Cesar Araújo & Alexandre Camargo Martensen")`
+License: `use_mit_license("Julio Cesar Araujo and Alexandre Camargo Martensen")`
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
