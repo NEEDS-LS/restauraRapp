@@ -12,7 +12,7 @@ Authors@R:
            family = "Martensen",
            role = c("aut", "cre"),
            email = "acmartensen@gmail.com",
-           comment = c(ORCID = "0000-0001-9017-7480"))
+           comment = c(ORCID = "0000-0001-9017-7480")))
 Maintainer: Júlio Cesar Araújo <jclaraujo92@gmail.com>
 Description: 
 Imports:
