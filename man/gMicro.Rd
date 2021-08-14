@@ -2,7 +2,7 @@
 % Please edit documentation in R/gMicro.R
 \name{gMicro}
 \alias{gMicro}
-\title{Função unifica a hidrográfia, cria os buffers e corta com o uso do solo.}
+\title{Função unifica a hidrográfia, cria os buffers e corta com o uso do solo para propriedades de tamanho micro}
 \usage{
 gMicro(mapa_MDA, mapa_RMS, mapa_RMD = NULL, mapa_NAS, micro, uso)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/gPeq_1_2.R
 \name{gPeq_1_2}
 \alias{gPeq_1_2}
-\title{Função unifica a hidrográfia, cria os buffers e corta com o uso do solo.}
+\title{Função unifica a hidrográfia, cria os buffers e corta com o uso do solo para propriedades pequenas de 1 a 2.}
 \usage{
 gPeq_1_2(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, pequeno_1_2, uso)
 }

@@ -1,8 +1,8 @@
-#' Função unifica a hidrográfia, cria os buffers e corta com o uso do solo.
+#' Função unifica a hidrográfia, cria os buffers e corta com o uso do solo para as propriedades de tamanho grande.
 #'
-#' Essa função unifica a hidrografia e cria os buffer referentes as áreas a serem 
-#' restauradas em propriedades de tamanho grande, maiores que dez módulos fiscais, 
-#'(15 metros em nascentes e 30 nas demais hidrográfias), retornando a intersecção 
+#' Essa função unifica a hidrografia e cria os buffer referentes as áreas a serem
+#' restauradas em propriedades de tamanho grande, maiores que dez módulos fiscais,
+#'(15 metros em nascentes e 30 nas demais hidrográfias), retornando a intersecção
 #'deste buffer com o uso do solo
 #' @param mapa_MDA Mapa da hidrográfia referente as Massas d'água.
 #' @param mapa_RMS Mapa da hidrográfia referente aos Rios de margem simples.
@@ -13,17 +13,17 @@
 #' @return Objeto SpatialPolygonsDataFrames referente ao uso do solo dentro do buffer criado
 #' @export
 #' @examples
-#' gGrande<-function(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,media,uso)
-#' 
+#' unifica.grandes<-gGrande(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,media,uso)
+#'
 
 gGrande<-function(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,grande,uso){
-  
+
   if(!is.null(mapa_RMD)){
     mapa_RMD<-gBuffer(mapa_RMD, byid=TRUE, width=0)
-    
+
     mapa_MDA<-mapa_MDA[mapa_MDA@data$AREA_HA > 1,]
-    
-    if(length(mapa_MDA@polygons)==0){ 
+
+    if(length(mapa_MDA@polygons)==0){
       mapa_hidro_pol<-mapa_RMD
       mapa_hidro<-gUnion(mapa_hidro_pol, mapa_RMS)
     }else{
@@ -32,7 +32,7 @@ gGrande<-function(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,grande,uso){
       mapa_hidro<-gUnion(mapa_hidro_pol, mapa_RMS)
     }}else{
       mapa_MDA<-mapa_MDA[mapa_MDA@data$AREA_HA > 1,]
-      if(length(mapa_MDA@polygons)==0){ 
+      if(length(mapa_MDA@polygons)==0){
         mapa_hidro<-mapa_RMS
         mapa_hidro_pol<-NULL
       }else{
@@ -42,7 +42,7 @@ gGrande<-function(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,grande,uso){
       }
     }
   mapa_NAS<-gBuffer(mapa_NAS, byid=TRUE, width = 15)
-  
+
   grande_app_original<-gBuffer(mapa_hidro, byid=TRUE, width=30)
   grande_app_original<-gUnion(grande_app_original, mapa_NAS)
   if(!is.null(mapa_hidro_pol)){
@@ -52,6 +52,6 @@ gGrande<-function(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,grande,uso){
   grande_app<-gBuffer(grande_app, byid=TRUE, width=0)
   grande_app<-raster::intersect(mapa_USO, grande_app)
 
-  
+
   return(grande_app)
 }

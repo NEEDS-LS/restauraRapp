@@ -2,7 +2,7 @@
 % Please edit documentation in R/gMedia.R
 \name{gMedia}
 \alias{gMedia}
-\title{Função unifica a hidrográfia, cria os buffers e corta com o uso do solo.}
+\title{Função unifica a hidrográfia, cria os buffers e corta com o uso do solo para propriedades de tamanho médio.}
 \usage{
 gMedia(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, media, uso)
 }

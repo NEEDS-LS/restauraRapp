@@ -18,5 +18,5 @@ os dados
 Essa função baixa os dados de uso do solo e de APP da FBDS
 }
 \examples{
-baixaFBDS<-function(estado, municipio)
+dado.municipio<-baixaFBDS(estado, municipio)
 }

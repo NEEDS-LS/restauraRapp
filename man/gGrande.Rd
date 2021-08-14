@@ -2,7 +2,7 @@
 % Please edit documentation in R/gGrande.R
 \name{gGrande}
 \alias{gGrande}
-\title{Função unifica a hidrográfia, cria os buffers e corta com o uso do solo.}
+\title{Função unifica a hidrográfia, cria os buffers e corta com o uso do solo para as propriedades de tamanho grande.}
 \usage{
 gGrande(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, grande, uso)
 }
@@ -29,6 +29,6 @@ restauradas em propriedades de tamanho grande, maiores que dez módulos fiscais,
 deste buffer com o uso do solo
 }
 \examples{
-gGrande<-function(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,media,uso)
+unifica.grandes<-gGrande(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,media,uso)
 
 }

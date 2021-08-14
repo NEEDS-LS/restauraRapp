@@ -21,5 +21,4 @@ exemplo<-gMicro(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,micro,uso)
 
 area<-areaRestaurar(exemplo)
 
-#area = Valor em hectares a ser restaurado.
 }
