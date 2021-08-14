@@ -5,23 +5,23 @@
 #' @return a.cons.area Retorna o valor, em hectares, a ser restaurado dentro do buffer de entrada.
 #' @export
 #' @examples
-#' 
+#'
 #' exemplo<-gMicro(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,micro,uso)
-#' 
+#'
 #' area<-areaRestaurar(exemplo)
-#' 
-#' #area = Valor em hectares a ser restaurado.
+#'
+
 
 
 areaRestaurar<-function(clipped_use){
-  
+
   clipped_use$CLASSE_USO<-rm_accent(clipped_use$CLASSE_USO)
-  
-  clipped_use<-clipped_use[clipped_use$CLASSE_USO!="formacao florestal" & 
+
+  clipped_use<-clipped_use[clipped_use$CLASSE_USO!="formacao florestal" &
                              clipped_use$CLASSE_USO!="formacao nao florestal",]
-  
+
   clipped_use<-mergePoli(clipped_use)
-  
+
   clipped_use<-gArea(clipped_use)/10000
   return(clipped_use)
 }

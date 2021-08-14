@@ -1,4 +1,4 @@
-#' Função unifica a hidrográfia, cria os buffers e corta com o uso do solo.
+#' Função unifica a hidrográfia, cria os buffers e corta com o uso do solo para propriedades de tamanho médio.
 #'
 #' Essa função unifica a hidrografia e cria os buffer referentes as áreas a serem
 #' restauradas em propriedades de tamanho médio, entre quatro e dez módulos fiscais,
