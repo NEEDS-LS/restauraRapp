@@ -33,11 +33,11 @@ library(devtools)
 ```
 
 E agora baixo o pacote CARapp do nosso diretório.
-```{r, eval=TRUE}
+```{r, eval=TRUE, message=FALSE}
 devtools::install_github("NEEDS-LS/CARapp")
 ```
 
-```{r setup, eval=FALSE}
+```{r setup}
 library(CARapp)
 ```
 
@@ -48,8 +48,8 @@ data(package = "CARapp")
 
 Iremos usar como exemplo os dados do município de Campina do Monte Alegre, no estado de São Paulo. Esse município é muito próximo do campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
 
-```{r, eval=FALSE}
-load("CMA.RData")
+```{r, eval=TRUE}
+load("./data/CMA.RData")
 ```
 
 
