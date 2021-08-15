@@ -14,13 +14,21 @@ Authors@R:
            email = "acmartensen@gmail.com",
            comment = c(ORCID = "0000-0001-9017-7480")))
 Maintainer: Júlio Cesar Araújo <jclaraujo92@gmail.com>
-Description: 
+Description:
+Depends:
+    R (>= 3.5.0),
+    raster (>=  3.4-13),
+    rgdal (>= 1.5-23),
+    rgeos (>= 0.5-5),
+    sf (>= 1.0-1),
+    abjutils (>= 0.3.1)
 Imports:
-    rgdal,
-    raster,
-    rgeos,
-    abjutils,
-    sf
+    sp
+Suggests:
+    knitr,
+    devtools,
+    roxygen2,
+    testthat
 License: `use_mit_license("Julio Cesar Araujo and Alexandre Camargo Martensen")`
 Encoding: UTF-8
 LazyData: true
