@@ -33,11 +33,11 @@ library(devtools)
 ```
 
 E agora baixo o pacote CARapp do nosso diretório.
-```{r, eval=TRUE, message=FALSE}
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
 devtools::install_github("NEEDS-LS/CARapp")
 ```
 
-```{r setup}
+```{r setup, message=FALSE}
 library(CARapp)
 ```
 
@@ -52,13 +52,152 @@ Iremos usar como exemplo os dados do município de Campina do Monte Alegre, no e
 data("CMA")
 ```
 
-
 Uma vantagem é que Campina do Monte Alegre é um município de dimensões pequenas, o que facilita usá-lo como município para demonstração. 
-```{r, eval=FALSE}
-plot(CMA_CAR)
+```{r, fig.align='center', fig.cap="Município de Campina do Monte Alegre"}
+plot(CMA_MUN)
+axis(1)
+axis(2)
 ```
 
-Aqui eu acho q precisamos ver, pq a funcao separaTamanho() acho q tvz deva ir para dentro da funcao q vai ser corrigiga para ficar independente do tamanho. 
+
+É necessário inicialmente tratarmos os possíveis problemas de topologia (ex. *self_intersections*). Esses erros de topologia ocorrem quando um poligono é intersectado por ele mesmo em algum ponto e é resolvido quando executado um buffer de comprimento 0m. Esse procedimento é em geralmente necessário na camada de uso do solo, mas pode ser necessária em outras camadas também.
+
+**Precisa ver que tipo mais de limpeza precisa ser costumeiramente feita, e tvz gerar uma funcao pra resolver isso**
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+CMA_USO<-gBuffer(CMA_USO, byid=TRUE, width=0)
+```
+
+Também é interessante remover os CARs registrados com situação classificada como "cancelado por decisão administrativa", diminuindo consideravelmente o número de sobreposições.
+
+**Essa aqui tb deve virar funcao**
+```{r}
+CMA_CAR<-CMA_CAR[CMA_CAR@data$SITUACAO != "CA",]
+```
+
+**Aqui eu acho q precisamos ver, pq a funcao separaTamanho() acho q tvz deva ir para dentro da funcao q vai ser corrigiga para ficar independente do tamanho. Mas tb deixa-la como funcao independente**
+
+A partir daqui executaremos as funções deste pacote, começando pela função *separaTamanho()*. O parâmetro nesta função é apenas o objeto na qual as informações do CAR estão mantidos e o retorno é uma lista com os tamanhos separados de acordo com o número de módulos fiscais divididos nos grupos: micro (< 1 módulo fiscal), pequenas entre 1 e 2 módulos fiscais, pequenas entre 2 e 4 módulos fiscais, médias (entre 4 e 10 módulos fiscais) e grandes (> 10 módulos fiscais).
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+propriedades<-separaTamanho(CMA_CAR)
+
+micro<-propriedades[[1]]
+peq12<-propriedades[[2]]
+peq24<-propriedades[[3]]
+media<-propriedades[[4]]
+grand<-propriedades[[5]]
+```
+
+**Aqui para a vignette, tvz baste executar uma delas apenas. Qual é a mais rápida? Micro? Peq12? Apesar de ser legal ter o mapa todo.... Temos que pensar**
+
+Agora vamos executar as funções (**ou a função??**) que vão criar os buffers e recortar o uso de solo dentro das áreas definidas para restauração para cada classe de propriedades. Essas funções demandam um poder de processamento consideravel e podem demorar.
+
+**E como falei, acho q devemos juntar tudo numa mesma funcao**
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+REST_micro<-gMicro(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, micro, mapa_USO)
+#REST_peq12<-gPeq_1_2(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, peq12, mapa_USO)
+#REST_peq24<-gPeq_2_4(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, peq24, mapa_USO)
+#REST_media<-gMedia(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, media, mapa_USO)
+#REST_grand<-gGrande(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, grand, mapa_USO)
+```
+
+**Aqui precisa ver se precisa tudo isso**
+```{r, echo=FALSE, eval=FALSE}
+REST_micro$CLASSE_PROP<-"micro"
+REST_peq12$CLASSE_PROP<-"pequena 1 e 2 modulos"
+REST_peq24$CLASSE_PROP<-"pequena 2 e 4 modulos"
+REST_media$CLASSE_PROP<-"media"
+REST_grand$CLASSE_PROP<-"grande"
+lista<-c(REST_micro, REST_peq12, REST_peq24, REST_media, REST_grand)
+mapa_geral<-do.call("rbind",lista)
+
+plot(mapa_geral)
+writeOGR(mapa_geral, dsn=("./data_use/REST_APP"), "REST_APP_Angatuba", 
+         driver="ESRI Shapefile", overwrite_layer = TRUE)
+```
+
+
+Como resultado temos o uso do solo dentro do buffer para restauração e podemos calcular a quantidade de área com vegetação nativa e o que precisa ser recuperado.
+
+Micro Propriedades:
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+micro_vegetacao<-areaVegetacao(REST_micro)
+micro_restaurar<-areaRestaurar(REST_micro)
+```
+
+Nas micro propriedades o total de APPs a ser restaurado é de r micro_restaurar é só colocar as ` depois **qual a unidade**
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+micro_vegetacao
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+micro_restaurar
+```
+
+Pequenas Propriedades entre 1 e 2 módulos:
+
+```{r, echo=TRUE, warning=FALSE, results='hide', message=FALSE, eval=FALSE}
+peq12_vegetacao<-areaVegetacao(REST_peq12)
+peq12_restaurar<-areaRestaurar(REST_peq12)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+peq12_vegetacao
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+peq12_restaurar
+```
+
+Pequenas Propriedades entre 2 e 4 módulos:
+
+```{r, echo=TRUE, warning=FALSE, results='hide', message=FALSE, eval=FALSE}
+peq24_vegetacao<-areaVegetacao(REST_peq24)
+peq24_restaurar<-areaRestaurar(REST_peq24)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+peq24_vegetacao
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+peq24_restaurar
+```
+
+Médias Propriedades:
+
+```{r, echo=TRUE, warning=FALSE, results='hide', message=FALSE, eval=FALSE}
+media_vegetacao<-areaVegetacao(REST_media)
+media_restaurar<-areaRestaurar(REST_media)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+media_vegetacao
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+media_restaurar
+```
+
+Grandes Propriedades:
+
+```{r, echo=TRUE, warning=FALSE, results='hide', message=FALSE, eval=FALSE}
+grande_vegetacao<-areaVegetacao(REST_grand)
+grande_restaurar<-areaRestaurar(REST_grand)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+grande_vegetacao
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+grande_restaurar
+```
+
+**Aqui tvz incluir uma tabela com as áreas totais, áreas vegetadas, áreas para se restaurar de todos os tamanhos**
 
 
 
