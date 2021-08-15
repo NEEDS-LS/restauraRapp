@@ -49,80 +49,14 @@ data(package = "CARapp")
 Iremos usar como exemplo os dados do município de Campina do Monte Alegre, no estado de São Paulo. Esse município é muito próximo do campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
 
 ```{r, eval=TRUE}
-load("./data/CMA.RData")
+data("CMA")
 ```
 
 
 Uma vantagem é que Campina do Monte Alegre é um município de dimensões pequenas, o que facilita usá-lo como município para demonstração. 
 ```{r, eval=FALSE}
-plot()
+plot(CMA_CAR)
 ```
-
-Apenas para gravar e salvar os dados, depois tira da vignette
-```{r, eval=FALSE, echo=FALSE}
-CMA_CAR<-readOGR(dsn="./data_use/CAR/Campina do Monte Alegre",
-                  layer="AREA_IMOVEL", use_iconv=TRUE, encoding="UTF-8")
-#mapa_MDA = mapa com as massas d'água disponibilizado pela FBDS
-CMA_MDA<-readOGR(dsn="./data_use/FBDS_Hidrografia",
-                  layer="SP_3509452_MASSAS_DAGUA", use_iconv=TRUE,encoding="UTF-8")
-#mapa_NAS = mapa com as nascentes fornecido disponibilizado FBDS
-CMA_NAS<-readOGR(dsn="./data_use/FBDS_Hidrografia",
-                  layer="SP_3509452_NASCENTES", use_iconv=TRUE, encoding="UTF-8")
-#mapa_RMS = mapa com os rios de margem simples disponibilizado pela FBDS
-CMA_RMS<-readOGR(dsn="./data_use/FBDS_Hidrografia",
-                  layer="SP_3509452_RIOS_SIMPLES", use_iconv=TRUE, encoding="UTF-8")
-#mapa_RMD = mapa com os rios de margem dupla disponibilzados pela FBDS
-CMA_RMD<-readOGR(dsn="./data_use/FBDS_Hidrografia",
-                  layer="SP_3509452_RIOS_DUPLOS", use_iconv=TRUE, encoding="UTF-8")
-#mapa_USO = mapa com o uso do solo da região em análise, pode ser da FBDS ou MapBiomas
-CMA_USO<-readOGR(dsn="./data_use/FBDS_APP_USO_Municipios",
-                  layer="SP_3509452_USO", use_iconv=TRUE, encoding="UTF-8")
-#mapa_MUN = mapa com o limite do(s) município(s) em análise
-mapa_MUN<-readOGR(dsn="./data_use/LIMITE_MUN_JUNTOS",
-                  layer="muni_ALPA", use_iconv=TRUE, encoding="UTF-8")
-#Agora tem q recortar apenas CMA
-#CMA_MUN<-mapa_MUN[mapa_MUN@data$NOME_MUN == "Campina do Monte Alegre",]
-
-#Acerta as coordenadas
-CMA_CAR <- CRS_proj(CMA_CAR, 31982)
-CMA_USO <- CRS_proj(CMA_USO, 31982)
-CMA_RMD <- CRS_proj(CMA_RMD, 31982)
-CMA_RMS <- CRS_proj(CMA_RMS, 31982)
-CMA_MDA <- CRS_proj(CMA_MDA, 31982)
-CMA_NAS <- CRS_proj(CMA_NAS, 31982)
-CMA_MUN <- CRS_proj(CMA_MUN, 31982)
-````
-
-Depois tira da vignette
-```{r, eval=FALSE}
-save(CMA_CAR, CMA_MDA, CMA_NAS, CMA_RMS, CMA_RMD, CMA_USO, CMA_MUN, file = "./data/CMA.RData")
-```
-
-Precisa ver o que precisa manter dessa parte
-
-##################################################
-
-
-A próxima etapa é de extrema importância para a execução das funções deste pacote, a partir de 2019/2020 passou a ser adotado dentro do sistema de coordenadas o PROJ6 e GDAL3, que causou algumas mudanças na forma que o CRS (Coordinate Reference System) é usado. Está mudança pode ser identificada já na entrada dos dados, caso apareça uma warning:
-
-```{r, eval=FALSE, echo=FALSE, warning=TRUE, results='hide', message=FALSE}
-mapa_MDA<-readOGR(dsn="../data_use/FBDS_Hidrografia",
-                  layer="SP_3509452_MASSAS_DAGUA", use_iconv=TRUE,encoding="UTF-8")
-```
-
-Caso isso ocorra o processo de mudança da projeção poderá ser feita pela função *CRS_proj()*, tendo como entrada o CRS destino e o objeto a ser reprojetado. Caso a projeção do objeto esteja correta mas o warning foi exibido ainda é necessário reprojeta-lo para o CRS desejado. Neste exemplo usaremos o SIRGAS 2000/UTM 22S (EPSG: 31982).
-
-```{r, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
-mapa_CAR <- CRS_proj(mapa_CAR, 31982)
-mapa_USO <- CRS_proj(mapa_USO, 31982)
-mapa_RMD <- CRS_proj(mapa_RMD, 31982)
-mapa_RMS <- CRS_proj(mapa_RMS, 31982)
-mapa_MDA <- CRS_proj(mapa_MDA, 31982)
-mapa_NAS <- CRS_proj(mapa_NAS, 31982)
-mapa_MUN <- CRS_proj(mapa_MUN, 31982)
-```
-
-#################################################
 
 Aqui eu acho q precisamos ver, pq a funcao separaTamanho() acho q tvz deva ir para dentro da funcao q vai ser corrigiga para ficar independente do tamanho. 
 
