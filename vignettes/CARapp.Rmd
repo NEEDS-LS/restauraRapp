@@ -3,8 +3,10 @@ title: "CARapp"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{CARapp}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, include = FALSE}
@@ -13,6 +15,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
 
 #Pacote CAR_APP
 
@@ -46,33 +49,30 @@ No nosso pacote estão disponíveis uma série de dados para você se familiariz
 data(package = "CARapp") 
 ```
 
-Iremos usar como exemplo os dados do município de Campina do Monte Alegre, no estado de São Paulo. Esse município é muito próximo do campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
+Iremos usar como exemplo os dados do município de Buri, no estado de São Paulo. Nesse município estão localizado o campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
 
 ```{r, eval=TRUE}
-data("CMA")
+data("BURI")
 ```
 
-Uma vantagem é que Campina do Monte Alegre é um município de dimensões pequenas, o que facilita usá-lo como município para demonstração. 
+Uma vantagem é que Buri é um município que facilita usá-lo como município para demonstração. Apresentando todas as variáveis abordadas pelas análises.
+
 ```{r, fig.align='center', fig.cap="Município de Campina do Monte Alegre"}
-plot(CMA_MUN)
+plot(BURI_MUN)
 axis(1)
 axis(2)
 ```
 
 
-É necessário inicialmente tratarmos os possíveis problemas de topologia (ex. *self_intersections*). Esses erros de topologia ocorrem quando um poligono é intersectado por ele mesmo em algum ponto e é resolvido quando executado um buffer de comprimento 0m. Esse procedimento é em geralmente necessário na camada de uso do solo, mas pode ser necessária em outras camadas também.
+É necessário inicialmente tratarmos algumas práticas, como o sistema de referência de coordenadas (do inglês CRS - Coordinate Reference System) e os possíveis problemas de topologia (ex. *self_intersections*). No caso do CRS, sempre utilizar aquele que melhor se enquadre em sua região desde que o mesmo esteja em UTM (unidade em metros) e essa conversão deve ser feita para todas informações cartográficas utilizadas. Quanto aos erros de topologia, estes ocorrem quando um poligono é intersectado por ele mesmo em algum ponto e é resolvido quando executado um buffer de comprimento 0m. Esse procedimento é em geralmente necessário na camada de uso do solo, mas pode ser necessária em outras camadas também.
+
+Para estas duas práticas podemos utilizar as funções especificas provenientes do pacote sf, como mostrado no exemplo abaixo. No caso de Buri, usaremos o EPSG 31982, referente ao SIRGAS 2000/ UTM zone 22s.
 
 **Precisa ver que tipo mais de limpeza precisa ser costumeiramente feita, e tvz gerar uma funcao pra resolver isso**
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-CMA_USO<-gBuffer(CMA_USO, byid=TRUE, width=0)
-```
-
-Também é interessante remover os CARs registrados com situação classificada como "cancelado por decisão administrativa", diminuindo consideravelmente o número de sobreposições.
-
-**Essa aqui tb deve virar funcao**
-```{r}
-CMA_CAR<-CMA_CAR[CMA_CAR@data$SITUACAO != "CA",]
+BURI_USO<-st_Buffer(BURI_USO, 0)
+BURI_USO<-st_transform(BURI_USO, 31982)
 ```
 
 **Aqui eu acho q precisamos ver, pq a funcao separaTamanho() acho q tvz deva ir para dentro da funcao q vai ser corrigiga para ficar independente do tamanho. Mas tb deixa-la como funcao independente**
@@ -80,7 +80,7 @@ CMA_CAR<-CMA_CAR[CMA_CAR@data$SITUACAO != "CA",]
 A partir daqui executaremos as funções deste pacote, começando pela função *separaTamanho()*. O parâmetro nesta função é apenas o objeto na qual as informações do CAR estão mantidos e o retorno é uma lista com os tamanhos separados de acordo com o número de módulos fiscais divididos nos grupos: micro (< 1 módulo fiscal), pequenas entre 1 e 2 módulos fiscais, pequenas entre 2 e 4 módulos fiscais, médias (entre 4 e 10 módulos fiscais) e grandes (> 10 módulos fiscais).
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-propriedades<-separaTamanho(CMA_CAR)
+propriedades<-separaTamanho(BURI_CAR)
 
 micro<-propriedades[[1]]
 peq12<-propriedades[[2]]
@@ -91,113 +91,55 @@ grand<-propriedades[[5]]
 
 **Aqui para a vignette, tvz baste executar uma delas apenas. Qual é a mais rápida? Micro? Peq12? Apesar de ser legal ter o mapa todo.... Temos que pensar**
 
-Agora vamos executar as funções (**ou a função??**) que vão criar os buffers e recortar o uso de solo dentro das áreas definidas para restauração para cada classe de propriedades. Essas funções demandam um poder de processamento consideravel e podem demorar.
+Agora vamos executar a função *gCARapp()* que vai criar os buffers e recortar o uso de solo dentro das áreas definidas para restauração para cada classe de propriedades. Essa função demanda um poder de processamento consideravel e pode demorar, por esse motivo atualmente ela se econtra com um parâmetro para ser executada em partes, separada por classe de tamanho. Um parâmetro para execução completa será disponibilizada em breve.
 
-**E como falei, acho q devemos juntar tudo numa mesma funcao**
+Também se encontra disponivel dois cenários para avaliação das áreas sem CAR, considerando que todo o território é ocupado por propriedades rurais. No primeiro cenário tratamos essas áreas sem CAR como micro propriedades e no segundo consideramos toda a área como grande propriedade, isso representa os valores mínimos e máximos que podem ser restaurados nessas áreas.
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-REST_micro<-gMicro(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, micro, mapa_USO)
-#REST_peq12<-gPeq_1_2(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, peq12, mapa_USO)
-#REST_peq24<-gPeq_2_4(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, peq24, mapa_USO)
-#REST_media<-gMedia(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, media, mapa_USO)
-#REST_grand<-gGrande(mapa_MDA, mapa_RMS, mapa_RMD, mapa_NAS, grand, mapa_USO)
+REST_micro<-gCARapp(BURI_MDA, BURI_RMS, BURI_RMD, BURI_NAS, BURI_CAR, BURI_USO, tipo = "micro")
+#REST_peq12<-gCARapp(BURI_MDA, BURI_RMS, BURI_RMD, BURI_NAS, BURI_CAR, BURI_USO, tipo = "peq12")
+#REST_peq24<-gCARapp(BURI_MDA, BURI_RMS, BURI_RMD, BURI_NAS, BURI_CAR, BURI_USO, tipo = "peq24")
+#REST_media<-gCARapp(BURI_MDA, BURI_RMS, BURI_RMD, BURI_NAS, BURI_CAR, BURI_USO, tipo = "media")
+#REST_grand<-gCARapp(BURI_MDA, BURI_RMS, BURI_RMD, BURI_NAS, BURI_CAR, BURI_USO, tipo = "grande")
+#REST_cena1<-gCARapp(BURI_MDA, BURI_RMS, BURI_RMD, BURI_NAS, BURI_CAR, BURI_USO, tipo = "out1")
+#REST_cena2<-gCARapp(BURI_MDA, BURI_RMS, BURI_RMD, BURI_NAS, BURI_CAR, BURI_USO, tipo = "out2")
 ```
 
 **Aqui precisa ver se precisa tudo isso**
+
+Aqui mostramos como unir todos os objetos e um exemplo para salvar as informações. Caso aconteça algum problema com uso de memória pelo R é interessante salvar cada classe de tamanho em separado e posteriormente junta-lo.
+
 ```{r, echo=FALSE, eval=FALSE}
-REST_micro$CLASSE_PROP<-"micro"
-REST_peq12$CLASSE_PROP<-"pequena 1 e 2 modulos"
-REST_peq24$CLASSE_PROP<-"pequena 2 e 4 modulos"
-REST_media$CLASSE_PROP<-"media"
-REST_grand$CLASSE_PROP<-"grande"
-lista<-c(REST_micro, REST_peq12, REST_peq24, REST_media, REST_grand)
-mapa_geral<-do.call("rbind",lista)
-
-plot(mapa_geral)
-writeOGR(mapa_geral, dsn=("./data_use/REST_APP"), "REST_APP_Angatuba", 
-         driver="ESRI Shapefile", overwrite_layer = TRUE)
+mapa_geral<-rbind(REST_micro, REST_peq12, REST_peq24, REST_media, REST_grand)
+st_write(mapa_geral, dsn="./data_use/CAR_APP_BURI_SP", "CAR_APP_BURI_SP", driver="ESRI Shapefile")
 ```
 
+Como resultado temos o uso do solo dentro do buffer para restauração e podemos calcular a quantidade de área com vegetação nativa e o que precisa ser recuperado. Deste modo apresentamos a função *CARapp_RP()*, está função é responsavel por retornar três diferentes tipos de resultados: I) as áreas que, separadas por classe de tamanho que precisam ser restauradas ou que se encontram preservadas com informações cartográficas; II) Informações das áreas a serem restauradas ou que se encontram preservadas por classe de tamanho na forma de tabela de dados para impressão; III) Uma tabela de dados contendo as informações do que deve ser resutarado ou se encontra preservado por propriedade.
 
-Como resultado temos o uso do solo dentro do buffer para restauração e podemos calcular a quantidade de área com vegetação nativa e o que precisa ser recuperado.
+```{r, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+#Para executar o tipo "df" é necessário todos os resultados da função gCARapp()
+  dados.CARapp<-CARapp_RP(BURI_APP,BURI_OUT1,BURI_OUT2,tipo="df")
 
-Micro Propriedades:
+# A opção "all" é executada apenas para os resultados das análises das áreas que possuem CAR.
+  poligonos.CARapp<-CARapp_RP(BURI_APP, tipo="all")
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-micro_vegetacao<-areaVegetacao(REST_micro)
-micro_restaurar<-areaRestaurar(REST_micro)
+# Por fim, a opção "prop" leva em consideração apenas os resultados das análises das áreas que
+#possuem CAR.
+  propriedade.CARapp<-CARapp_RP(BURI_APP, BURI_CAR, tipo="prop")
 ```
 
-Nas micro propriedades o total de APPs a ser restaurado é de r micro_restaurar é só colocar as ` depois **qual a unidade**
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-micro_vegetacao
+Aqui, por exemplo, está a tabela de dados das APPs por classe de tamanho.
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+knitr::kable(dados.CARapp)
 ```
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-micro_restaurar
+Por fim, vamos dar uma olhada em algumas informações sobre o CAR que podem ser obtidas usando a função *CARapp_CAR_info()*.
+
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+df.CAR<-CARapp_CAR_info(BURI_CAR)
 ```
 
-Pequenas Propriedades entre 1 e 2 módulos:
-
-```{r, echo=TRUE, warning=FALSE, results='hide', message=FALSE, eval=FALSE}
-peq12_vegetacao<-areaVegetacao(REST_peq12)
-peq12_restaurar<-areaRestaurar(REST_peq12)
+```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+knitr::kable(df.CAR)
 ```
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-peq12_vegetacao
-```
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-peq12_restaurar
-```
-
-Pequenas Propriedades entre 2 e 4 módulos:
-
-```{r, echo=TRUE, warning=FALSE, results='hide', message=FALSE, eval=FALSE}
-peq24_vegetacao<-areaVegetacao(REST_peq24)
-peq24_restaurar<-areaRestaurar(REST_peq24)
-```
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-peq24_vegetacao
-```
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-peq24_restaurar
-```
-
-Médias Propriedades:
-
-```{r, echo=TRUE, warning=FALSE, results='hide', message=FALSE, eval=FALSE}
-media_vegetacao<-areaVegetacao(REST_media)
-media_restaurar<-areaRestaurar(REST_media)
-```
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-media_vegetacao
-```
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-media_restaurar
-```
-
-Grandes Propriedades:
-
-```{r, echo=TRUE, warning=FALSE, results='hide', message=FALSE, eval=FALSE}
-grande_vegetacao<-areaVegetacao(REST_grand)
-grande_restaurar<-areaRestaurar(REST_grand)
-```
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-grande_vegetacao
-```
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-grande_restaurar
-```
-
-**Aqui tvz incluir uma tabela com as áreas totais, áreas vegetadas, áreas para se restaurar de todos os tamanhos**
-
-
-

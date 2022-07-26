@@ -1,154 +1,184 @@
 #' Função unifica a hidrográfia, cria os buffers e corta com o uso do solo para as propriedades
 #'
 #' Essa função unifica a hidrografia e cria os buffer referentes as áreas a serem
-#' restauradas nas propriedades (com o tamanho da área de acordo com o tipo de propriedade selecionaldo),
-#' retornando a intersecção deste buffer com o uso do solo
-#' @param mapa_MDA Mapa da hidrográfia referente as Massas d'água.
+#' restauradas nas propriedades (com o tamanho da área de acordo com o tipo de propriedade
+#' selecionaldo), retornando a intersecção deste buffer com o uso do solo
+#' @param mapa_MDA Mapa da hidrográfia referente as Massas d'água, pode ser NULL.
 #' @param mapa_RMS Mapa da hidrográfia referente aos Rios de margem simples.
-#' @param mapa_RMD Mapa da hidrográfia referente aos Rios de margem dupla.
+#' @param mapa_RMD Mapa da hidrográfia referente aos Rios de margem dupla, pode ser NULL.
 #' @param mapa_NAS Mapa da hidrográfia referente as Nascentes.
-#' @param CAR Conjunto de propriedades do CAR
+#' @param CAR Shapefile com poligonos das propriedades do CAR.
 #' @param uso Mapa do uso do solo do local
-#' @param tipo Qual tamanho de propriedade deve ser usado, sendo "micro" para menores que 1 módulo, "Peq1" entre 1 e 2 módulos, "peq2" para 2 a 4 módulos, "media" entre 4 a 10 módulos e "grande" para maiores que 10 módulos
-#' @return Objeto SpatialPolygonsDataFrames referente ao uso do solo dentro do buffer criado
+#' @param tipo Qual tamanho de propriedade deve ser usado, sendo "micro" para menores que 1 módulo, "Peq1" entre 1 e 2 módulos, "peq2" para 2 a 4 módulos, "media" entre 4 a 10 módulos, "grande" para maiores que 10 módulos, "out1" para modelar as áreas sem CAR como micro propriedades e "out2" para modelar as áreas sem car como grandes propriedades.
+#' @return Objeto sf referente ao uso do solo dentro do buffer criado.
 #' @export
 #' @examples
-#' gCARapp<-function(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,micro,uso)
+#' APP_micro<-gCARapp(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,CAR,uso,tipo="micro")
+#'
+#' #caso não exista Massas d'água e/ou Rios de margem dupla
+#' APP_micro<-gCARapp(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo="micro")
 #'
 
-gCARapp<-function(mapa_MDA,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
+gCARapp<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
+# mapa_MDA<-mun_MDA
+# mapa_RMS<-mun_RMS
+# mapa_RMD<-mun_RMD
+# mapa_NAS<-mun_NAS
+# CAR<-mun_CAR
+# uso<-mun_USO
+# tipo<-"out1"
 
   propriedades<-separaTamanho(CAR)
   if(tipo != "media"){
   if(!is.null(mapa_RMD)){
-    mapa_RMD<-gBuffer(mapa_RMD, byid=TRUE, width=0)
+    mapa_RMD<-st_buffer(mapa_RMD, 0)
 
-    mapa_MDA<-mapa_MDA[mapa_MDA@data$AREA_HA > 1,]
+    if(!is.null(mapa_MDA)){
+    mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
 
-    if(length(mapa_MDA@polygons)==0){
-      mapa_hidro_pol<-mapa_RMD
-      mapa_hidro<-gUnion(mapa_hidro_pol, mapa_RMS)
+    if(length(mapa_MDA$geometry)==0){
+      mapa_hidro_pol<-mapa_RMD %>% select((1:5))
+      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% select((1:5)))
     }else{
-      mapa_MDA<-gBuffer(mapa_MDA, byid=TRUE, width=0)
-      mapa_hidro_pol<-gUnion(mapa_MDA, mapa_RMD)
-      mapa_hidro<-gUnion(mapa_hidro_pol, mapa_RMS)
-    }}else{
-      mapa_MDA<-mapa_MDA[mapa_MDA@data$AREA_HA > 1,]
-      if(length(mapa_MDA@polygons)==0){
-        mapa_hidro<-mapa_RMS
+      mapa_MDA<-st_buffer(mapa_MDA, 0)
+      mapa_hidro_pol<-rbind(mapa_MDA %>% select((1:5)), mapa_RMD %>% select((1:5)))
+      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% select((1:5)))
+    }
+    }else{
+      mapa_hidro_pol<-mapa_RMD %>% select((1:5))
+      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% select((1:5)))
+    }
+    }else{
+      if(!is.null(mapa_MDA)){
+      mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
+      if(length(mapa_MDA$geometry)==0){
+        mapa_hidro<-mapa_RMS %>% select((1:5))
         mapa_hidro_pol<-NULL
       }else{
-        mapa_MDA<-gBuffer(mapa_MDA, byid=TRUE, width=0)
-        mapa_hidro_pol<-mapa_MDA
-        mapa_hidro<-gUnion(mapa_hidro_pol, mapa_RMS)
+        mapa_MDA<-st_buffer(mapa_MDA, 0)
+        mapa_hidro_pol<-mapa_MDA %>% select((1:5))
+        mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% select((1:5)))
+      }
+      }else{
+        mapa_hidro<-mapa_RMS %>% select((1:5))
+        mapa_hidro_pol<-NULL
       }
     }
   }else{
     if(!is.null(mapa_RMD)){
-      mapa_RMD<-gBuffer(mapa_RMD, byid=TRUE, width=0)
+      mapa_RMD<-st_buffer(mapa_RMD, 0)
 
-      mapa_MDA<-mapa_MDA[mapa_MDA@data$AREA_HA > 1,]
+      if(!is.null(mapa_MDA)){
+      mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
 
-      if(length(mapa_MDA@polygons)==0){
-        mapa_hidro_pol<-mapa_RMD
-        media_poli<-gBuffer(mapa_hidro_pol, byid=TRUE, width=30)
+        if(length(mapa_MDA$geometry)==0){
+          mapa_hidro_pol<-mapa_RMD %>% select((1:5))
+          media_poli<-st_buffer(mapa_hidro_pol, 30)
+        }else{
+          mapa_MDA<-st_buffer(mapa_MDA, 0)
+          mapa_hidro_pol<-rbind(mapa_MDA %>% select((1:5)), mapa_RMD %>% select((1:5)))
+          media_poli<-st_buffer(mapa_hidro_pol, 30)
+        }
       }else{
-        mapa_MDA<-gBuffer(mapa_MDA, byid=TRUE, width=0)
-        mapa_hidro_pol<-gUnion(mapa_MDA, mapa_RMD)
-        media_poli<-gBuffer(mapa_hidro_pol, byid=TRUE, width=30)
-      }}else{
-        mapa_MDA<-mapa_MDA[mapa_MDA@data$AREA_HA > 1,]
-        if(length(mapa_MDA@polygons)==0){
+        mapa_hidro_pol<-mapa_RMD %>% select((1:5))
+        media_poli<-st_buffer(mapa_hidro_pol, 30)
+      }
+    }else{
+      if(!is.null(mapa_MDA)){
+        mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
+        if(length(mapa_MDA$geometry)==0){
           mapa_hidro_pol<-NULL
         }else{
-          mapa_MDA<-gBuffer(mapa_MDA, byid=TRUE, width=0)
-          mapa_hidro_pol<-mapa_MDA
-          media_poli<-gBuffer(mapa_hidro_pol, byid=TRUE, width=30)
+          mapa_MDA<-st_buffer(mapa_MDA, 0)
+          mapa_hidro_pol<-mapa_MDA %>% select((1:5))
+          media_poli<-st_buffer(mapa_hidro_pol, 30)
         }
+      }else{
+        mapa_hidro_pol<-NULL
       }
     }
+  }
 
-  mapa_NAS<-gBuffer(mapa_NAS, byid=TRUE, width = 15)
+  mapa_NAS<-st_buffer(mapa_NAS %>% select((1:5)), 15)
 
   if(tipo == "micro"){
 
-    micro<-propriedades[[1]]
-
-    micro_app_original<-gBuffer(mapa_hidro, byid=TRUE, width=5)
-    micro_app_original<-gUnion(micro_app_original, mapa_NAS)
-    if(!is.null(mapa_hidro_pol)){
-      micro_app_original<-gDifference(micro_app_original, mapa_hidro_pol)
-    }
-    micro_app<-gIntersection(micro_app_original, micro)
-    micro_app<-gBuffer(micro_app, byid=TRUE, width=0)
-    micro_app<-raster::intersect(uso, micro_app)
-
-    return(micro_app)
+    cars<-propriedades[[1]]
+    appm<-5
+    prop<-"Micro"
 
   }else if(tipo == "peq1"){
 
-    pequeno_1_2<-propriedades[[2]]
-
-    pequeno12_app_original<-gBuffer(mapa_hidro, byid=TRUE, width=8)
-    pequeno12_app_original<-gUnion(pequeno12_app_original, mapa_NAS)
-    if(!is.null(mapa_hidro_pol)){
-      pequeno12_app_original<-gDifference(pequeno12_app_original, mapa_hidro_pol)
-    }
-    pequeno12_app<-gIntersection(pequeno12_app_original, pequeno_1_2)
-    pequeno12_app<-gBuffer(pequeno12_app, byid=TRUE, width=0)
-    pequeno12_app<-raster::intersect(uso, pequeno12_app)
-
-    return(pequeno12_app)
+    cars<-propriedades[[2]]
+    appm<-8
+    prop<-"Pequenas 1 a 2 modulos"
 
   }else if(tipo == "peq2"){
 
-    pequeno_2_4<-propriedades[[3]]
-
-    pequeno24_app_original<-gBuffer(mapa_hidro, byid=TRUE, width=15)
-    pequeno24_app_original<-gUnion(pequeno24_app_original, mapa_NAS)
-    if(!is.null(mapa_hidro_pol)){
-      pequeno24_app_original<-gDifference(pequeno24_app_original, mapa_hidro_pol)
-    }
-    pequeno24_app<-gIntersection(pequeno24_app_original, pequeno_2_4)
-    pequeno24_app<-gBuffer(pequeno24_app, byid=TRUE, width=0)
-    pequeno24_app<-raster::intersect(mapa_USO, pequeno24_app)
-
-    return(pequeno24_app)
+    cars<-propriedades[[3]]
+    appm<-15
+    prop<-"Pequenas 2 a 4 modulos"
 
   }else if(tipo == "media"){
 
-    media<-propriedades[[4]]
+    cars<-propriedades[[4]]
+    appm<-20
+    prop<-"Media"
 
-    media_rios<-gBuffer(mapa_RMS, byid=TRUE, width=20)
-    if(!is.null(mapa_hidro_pol)){
-      media_app_original<-gUnion(media_poli, media_rios)
-      media_app_original<-gDifference(media_app_original, mapa_hidro_pol)
-    }else{ media_app_original<-media_rios }
-
-    media_app_original<-gUnion(media_app_original, mapa_NAS)
-
-    media_app<-gIntersection(media_app_original, media)
-    media_app<-gBuffer(media_app, byid=TRUE, width=0)
-    media_app<-raster::intersect(mapa_USO, media_app)
-
-    return(media_app)
   }else if(tipo == "grande"){
 
-    grande<-propriedades[[5]]
+    cars<-propriedades[[5]]
+    appm<-30
+    prop<-"Grande"
 
-    grande_app_original<-gBuffer(mapa_hidro, byid=TRUE, width=30)
-    grande_app_original<-gUnion(grande_app_original, mapa_NAS)
-    if(!is.null(mapa_hidro_pol)){
-      grande_app_original<-gDifference(grande_app_original, mapa_hidro_pol)
-    }
-    grande_app<-gIntersection(grande_app_original, grande)
-    grande_app<-gBuffer(grande_app, byid=TRUE, width=0)
-    grande_app<-raster::intersect(mapa_USO, grande_app)
+  }else if(tipo == "out1"){
 
+    cars<-CAR[CAR$SITUACAO!="CA",]
+    appm<-5
+    prop<-"Sem CAR (Micro)"
 
-    return(grande_app)
+  }else if(tipo == "out2"){
+
+    cars<-CAR[CAR$SITUACAO!="CA",]
+    appm<-30
+    prop<-"Sem CAR (Grande)"
 
   }
 
+  if(tipo != "media"){
+    app_original<-st_buffer(mapa_hidro, appm)
+  }else{
+    rios<-st_buffer(mapa_RMS %>% select((1:5)), 20)
+    if(!is.null(mapa_hidro_pol)){
+    app_original<-rbind(media_poli, rios)
+    }else{app_original<-rios}
+  }
 
+  app_original<-rbind(app_original, mapa_NAS)
+  app_original<-app_original %>% group_by(MUNICIPIO) %>% summarize()
+
+  if(!is.null(mapa_hidro_pol)){
+    app_original<-st_difference(app_original, mapa_hidro_pol)
+  }
+
+#as diferentes geometria aparecem a partir do recorte entre app_original e cars.
+  if(tipo != "out1" & tipo != "out2"){
+    rec_app<-st_intersection(app_original, cars)
+    rec_app<-st_buffer(rec_app, 0)
+  }else{
+    cars<-cars %>% group_by(NOM_MUNICI) %>% summarise()
+    rec_app<-st_difference(app_original, cars)
+    rec_app<-st_buffer(rec_app, 0)
+  }
+
+  uso_app<-st_intersection(uso, rec_app)
+  #uso_app<-uso_app %>% group_by(CLASSE_USO) %>% summarize()
+  uso_app<-st_collection_extract(uso_app, "POLYGON") %>% group_by(CLASSE_USO) %>% summarise()
+  uso_app$C_PROP<-prop
+  uso_app$MUN<-unique(CAR$NOM_MUNICI)
+  uso_app$AREA_HA <- round(as.numeric(st_area(uso_app, by_feature = TRUE)/10000),2)
+  uso_app<-st_as_sf(as.data.frame(uso_app))
+  uso_app<-uso_app %>% rename ("C_USO" = "CLASSE_USO")
+
+return(uso_app)
 }
