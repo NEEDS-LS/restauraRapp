@@ -27,18 +27,18 @@
 #' @export
 #' @examples
 #' #Para executar o tipo "df" é necessário todos os resultados da função gCARapp()
-#' dados.CARapp<-CARapp_RP(CARapp,CARapp_out1,CARapp_out2,tipo="df")
+#' dados.CARapp<-CARapp_APP_info(CARapp,CARapp_out1,CARapp_out2,tipo="df")
 #'
 #' # A opção "all" é executada apenas para os resultados das análises das áreas que possuem CAR.
-#' poligonos.CARapp<-CARapp_RP(CARapp, tipo="all")
+#' poligonos.CARapp<-CARapp_APP_info(CARapp, tipo="all")
 #'
 #' # Por fim, a opção "prop" leva em consideração apenas os resultados das análises das áreas que
 #' #possuem CAR e os polígonos do CAR que não estão cancelados por decisão administrativa.
-#' propriedade.CARapp<-CARapp_RP(CARapp, CAR, tipo="prop")
+#' propriedade.CARapp<-CARapp_APP_info(CARapp, CAR, tipo="prop")
 #'
 
 
-CARapp_RP<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, tipo){
+CARapp_APP_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, tipo){
   if(tipo == "all"){
     CARapp$C_USO<-rm_accent(CARapp$C_USO)
     CARapp<-CARapp %>% mutate(SIT =
@@ -60,8 +60,6 @@ CARapp_RP<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, 
     if(!is.null(CARapp_out2)){
       clipped_app<-rbind(CARapp, CARapp_out2)
     }
-
-    clipped_app<-rbind(CARapp, out)
     clipped_app$C_USO<-rm_accent(clipped_app$C_USO)
     clipped_app<-clipped_app %>% mutate(SIT =
                                 case_when(C_USO == "agua" ~ "Restaurar",
@@ -114,15 +112,15 @@ CARapp_RP<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, 
     return(t.data)
 
   }else if(tipo == "prop"){
-    CARapp$CLASSE_USO<-rm_accent(CARapp$CLASSE_USO)
+    CARapp$C_USO<-rm_accent(CARapp$C_USO)
     CARapp<-CARapp %>% mutate(SIT =
-                                case_when(CLASSE_USO == "agua" ~ "Restaurar",
-                                          CLASSE_USO == "area antropizada" ~ "Restaurar",
-                                          CLASSE_USO == "area edificada" ~ "Restaurar",
-                                          CLASSE_USO == "silvicultura" ~ "Restaurar",
-                                          CLASSE_USO == "formacao florestal" ~ "Preservado",
-                                          CLASSE_USO == "formacao nao florestal" ~ "Preservado"))
-    CARapp<-CARapp %>% group_by(CLASSE_PROP, MUN, SIT) %>% summarise()
+                                case_when(C_USO == "agua" ~ "Restaurar",
+                                          C_USO == "area antropizada" ~ "Restaurar",
+                                          C_USO == "area edificada" ~ "Restaurar",
+                                          C_USO == "silvicultura" ~ "Restaurar",
+                                          C_USO == "formacao florestal" ~ "Preservado",
+                                          C_USO == "formacao nao florestal" ~ "Preservado"))
+    CARapp<-CARapp %>% group_by(C_PROP, MUN, SIT) %>% summarise()
 
     CAR.df<-CAR[CAR$SITUACAO!="CA",]
     CAR.df<-CAR.df %>% select((1:5))
@@ -130,7 +128,7 @@ CARapp_RP<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, 
     CAR<-separaTamanho(CAR)
     prop.app<-NULL
     for(i in 1:5){
-      app.uso<-CARapp[CARapp$CLASSE_PROP == CAR[[6]][i],]
+      app.uso<-CARapp[CARapp$C_PROP == CAR[[6]][i],]
       prop<-st_intersection(app.uso, CAR[[i]])
     if(is.null(prop.app)){
       prop.app<-prop
@@ -153,6 +151,7 @@ CARapp_RP<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, 
                                                    NUM_MODULO >= 4 ~ 0))
 
     CAR.df$max_rest[CAR.df$PRES_ha==0 & CAR.df$REST_ha==0]<-0
+    CAR.df<-st_drop_geometry(CAR.df)
 
     return(CAR.df)
     }

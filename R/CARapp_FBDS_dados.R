@@ -2,13 +2,13 @@
 #'
 #' Essa função baixa os dados de uso do solo e de APP da FBDS
 #' @param estado O estado do município (SIGLA)
-#' @param municipio o municipio escolhido (caixa alta separa por "_")
+#' @param municipio o municipio escolhido (caixa alta separado por "_")
 #' @return os dados de uso do solo e de Hidrografia da FBDS
 #' @export
 #' @examples
-#' dado.municipio<-baixaFBDS("SP", "CAMPINA_DO_MONTE_ALEGRE")
+#' dado.municipio<-CARapp_FBDS_dados("SP", "CAMPINA_DO_MONTE_ALEGRE")
 
-baixaFBDS<-function(estado, municipio){
+CARapp_FBDS_dados<-function(estado, municipio){
 
   lista.files.uso = readLines(
     paste('http://geo.fbds.org.br/',estado,'/',municipio,'/USO/', sep = ""))
@@ -18,6 +18,9 @@ baixaFBDS<-function(estado, municipio){
   lks.lista<-c(lista.files.uso,lista.files.app)
   lks<-getHTMLLinks(lks.lista, xpQuery =
                       paste("//a/@href[contains(., '",estado,"')]", sep = ""))
+  if(file.exists("./data")==FALSE){
+  dir.create("./data")
+  }
   dir.create(paste("./data/FBDS_",municipio, sep = ""))
   for (i in 1:(length(lks))){
     destf<-paste(paste("./data/FBDS_",municipio, sep = ""),

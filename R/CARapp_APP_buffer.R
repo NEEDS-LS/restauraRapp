@@ -13,22 +13,20 @@
 #' @return Objeto sf referente ao uso do solo dentro do buffer criado.
 #' @export
 #' @examples
-#' APP_micro<-gCARapp(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,CAR,uso,tipo="micro")
+#' APP_micro<-CARapp_APP_buffer(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,CAR,uso,tipo="micro")
 #'
 #' #caso não exista Massas d'água e/ou Rios de margem dupla
-#' APP_micro<-gCARapp(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo="micro")
+#' APP_micro<-CARapp_APP_buffer(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo="micro")
 #'
 
-gCARapp<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
-# mapa_MDA<-mun_MDA
-# mapa_RMS<-mun_RMS
-# mapa_RMD<-mun_RMD
-# mapa_NAS<-mun_NAS
-# CAR<-mun_CAR
-# uso<-mun_USO
-# tipo<-"out1"
+CARapp_APP_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
 
-  propriedades<-separaTamanho(CAR)
+  mapa_MDA<-st_buffer(mapa_MDA, 0)
+  mapa_RMS<-st_buffer(mapa_RMS, 0)
+  mapa_RMD<-st_buffer(mapa_RMD, 0)
+  uso<-st_buffer(uso, 0)
+
+  propriedades<-CARapp_CAR_class(CAR)
   if(tipo != "media"){
   if(!is.null(mapa_RMD)){
     mapa_RMD<-st_buffer(mapa_RMD, 0)
