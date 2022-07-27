@@ -18,12 +18,12 @@ Description:
 Depends:
     R (>= 3.5.0),
     sf (>= 1.0-7),
-    dplyr (>=1.0.8)
-    abjutils (>= 0.3.1)
-    curl (>= 4.3.2)
-    XML (>= 3.99-0.6)
+    dplyr (>=1.0.8),
+    abjutils (>= 0.3.1),
+    curl (>= 4.3.2),
+    XML (>= 3.99-0.6),
 Imports:
-    sf
+    sf 
 Suggests:
     knitr,
     devtools,
