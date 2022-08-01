@@ -42,7 +42,7 @@ CARapp_APP_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
   if(tipo == "all"){
     CARapp$C_USO<-rm_accent(CARapp$C_USO)
     CARapp<-CARapp %>% mutate(SIT =
-                                case_when(C_USO == "agua" ~ "Restaurar",
+                                case_when(C_USO == "agua" ~ "Agua",
                                           C_USO == "area antropizada" ~ "Restaurar",
                                           C_USO == "area edificada" ~ "Restaurar",
                                           C_USO == "silvicultura" ~ "Restaurar",
@@ -54,15 +54,18 @@ CARapp_APP_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     return(CARapp)
 
   }else if(tipo == "df"){
+
+    clipped_app<-CARapp
+
     if(!is.null(CARapp_out1)){
-      clipped_app<-rbind(CARapp, CARapp_out1)
+      clipped_app<-rbind(clipped_app, CARapp_out1)
     }
     if(!is.null(CARapp_out2)){
-      clipped_app<-rbind(CARapp, CARapp_out2)
+      clipped_app<-rbind(clipped_app, CARapp_out2)
     }
     clipped_app$C_USO<-rm_accent(clipped_app$C_USO)
     clipped_app<-clipped_app %>% mutate(SIT =
-                                case_when(C_USO == "agua" ~ "Restaurar",
+                                case_when(C_USO == "agua" ~ "Agua",
                                           C_USO == "area antropizada" ~ "Restaurar",
                                           C_USO == "area edificada" ~ "Restaurar",
                                           C_USO == "silvicultura" ~ "Restaurar",
@@ -70,8 +73,8 @@ CARapp_APP_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
                                           C_USO == "formacao nao florestal" ~ "Preservado"))
     clipped_app<-clipped_app %>% group_by(C_PROP, MUN, SIT) %>% summarise(AREA_HA = sum(AREA_HA))
 
-    rest<-CARapp[CARapp$SIT=="Restaurar",]
-    pres<-CARapp[CARapp$SIT=="Preservado",]
+    rest<-clipped_app[clipped_app$SIT=="Restaurar",]
+    pres<-clipped_app[clipped_app$SIT=="Preservado",]
 
     l.col.data<-c("Propriedade", "Restaurar (ha)", "Preservado (ha)")
 
@@ -97,13 +100,13 @@ CARapp_APP_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
               rest$AREA_HA[rest$C_PROP=="Sem CAR (Grande)"],
               pres$AREA_HA[pres$C_PROP=="Sem CAR (Grande)"])
 
-    names(l..micro)<-l.col.data
+    names(l.micro)<-l.col.data
     names(l.peq12)<-l.col.data
     names(l.peq23)<-l.col.data
     names(l.media)<-l.col.data
     names(l.grand)<-l.col.data
     names(l.out1)<-l.col.data
-    names(l..out2)<-l.col.data
+    names(l.out2)<-l.col.data
 
     l.all.data<-list(l.micro,l.peq12,l.peq23,l.media,l.grand,l.out1,l.out2)
 
@@ -114,7 +117,7 @@ CARapp_APP_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
   }else if(tipo == "prop"){
     CARapp$C_USO<-rm_accent(CARapp$C_USO)
     CARapp<-CARapp %>% mutate(SIT =
-                                case_when(C_USO == "agua" ~ "Restaurar",
+                                case_when(C_USO == "agua" ~ "Agua",
                                           C_USO == "area antropizada" ~ "Restaurar",
                                           C_USO == "area edificada" ~ "Restaurar",
                                           C_USO == "silvicultura" ~ "Restaurar",
@@ -125,7 +128,7 @@ CARapp_APP_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     CAR.df<-CAR[CAR$SITUACAO!="CA",]
     CAR.df<-CAR.df %>% select((1:5))
 
-    CAR<-separaTamanho(CAR)
+    CAR<-CARapp_CAR_class(CAR)
     prop.app<-NULL
     for(i in 1:5){
       app.uso<-CARapp[CARapp$C_PROP == CAR[[6]][i],]

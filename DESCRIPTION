@@ -22,9 +22,12 @@ Depends:
     abjutils (>= 0.3.1),
     curl (>= 4.3.2),
     XML (>= 3.99-0.6),
+    geodata (>= 0.4-6),
+    terra (>= 1.5-21),
 Imports:
     sf 
 Suggests:
+    rmarkdown,
     knitr,
     devtools,
     roxygen2,
@@ -34,7 +37,4 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Suggests: 
-    rmarkdown,
-    knitr
 VignetteBuilder: knitr

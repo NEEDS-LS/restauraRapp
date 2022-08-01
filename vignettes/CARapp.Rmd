@@ -49,7 +49,7 @@ No nosso pacote estão disponíveis uma série de dados para você se familiariz
 data(package = "CARapp") 
 ```
 
-Iremos usar como exemplo os dados do município de Buri, no estado de São Paulo. Nesse município estão localizado o campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
+Iremos usar como exemplo os dados do município de Buri, no estado de São Paulo. Nesse município esta localizado o campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
 
 ```{r, eval=TRUE}
 data("BURI")
@@ -98,7 +98,7 @@ grand<-propriedades[[5]]
 
 **Aqui para a vignette, tvz baste executar uma delas apenas. Qual é a mais rápida? Micro? Peq12? Apesar de ser legal ter o mapa todo.... Temos que pensar**
 
-Agora vamos executar a função *CARapp_APP_buffer()* que vai criar os buffers e recortar o uso de solo dentro das áreas definidas para restauração para cada classe de propriedades. Essa função demanda um poder de processamento consideravel e pode demorar, por esse motivo atualmente ela se encontra com um parâmetro para ser executada em partes, separada por classe de tamanho. Um parâmetro para execução completa será disponibilizado em breve.
+Agora vamos executar a função *CARapp_APP_buffer()* que vai criar os buffers e recortar o uso de solo dentro das áreas definidas para restauração para cada classe de propriedades. Essa função demanda um poder de processamento considerável e pode demorar, por esse motivo atualmente ela se encontra com um parâmetro para ser executada em partes, separada por classe de tamanho. Um parâmetro para execução completa será disponibilizado em breve.
 
 Também se encontra disponivel dois cenários para avaliação das áreas sem CAR, considerando que todo o território é ocupado por propriedades rurais. No primeiro cenário tratamos essas áreas sem CAR como micro propriedades e no segundo consideramos toda a área como grande propriedade, isso representa os valores mínimos e máximos que podem ser restaurados nessas áreas.
 
@@ -106,9 +106,9 @@ Também se encontra disponivel dois cenários para avaliação das áreas sem CA
 REST_micro<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
                               BURI_NAS, BURI_CAR, BURI_USO, tipo = "micro")
 #REST_peq12<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
-#                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "peq12")
+#                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "peq1")
 #REST_peq24<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
-#                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "peq24")
+#                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "peq2")
 #REST_media<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
 #                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "media")
 #REST_grand<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 

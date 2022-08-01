@@ -21,65 +21,62 @@
 
 CARapp_APP_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
 
+  if(!is.null(mapa_MDA)){
   mapa_MDA<-st_buffer(mapa_MDA, 0)
-  mapa_RMS<-st_buffer(mapa_RMS, 0)
+  }
+  if(!is.null(mapa_RMD)){
   mapa_RMD<-st_buffer(mapa_RMD, 0)
+  }
+  CAR<-st_buffer(CAR, 0)
   uso<-st_buffer(uso, 0)
 
   propriedades<-CARapp_CAR_class(CAR)
   if(tipo != "media"){
   if(!is.null(mapa_RMD)){
-    mapa_RMD<-st_buffer(mapa_RMD, 0)
 
     if(!is.null(mapa_MDA)){
     mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
 
     if(length(mapa_MDA$geometry)==0){
-      mapa_hidro_pol<-mapa_RMD %>% select((1:5))
-      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% select((1:5)))
+      mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
+      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
     }else{
       mapa_MDA<-st_buffer(mapa_MDA, 0)
-      mapa_hidro_pol<-rbind(mapa_MDA %>% select((1:5)), mapa_RMD %>% select((1:5)))
-      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% select((1:5)))
+      mapa_hidro_pol<-rbind(mapa_MDA %>% dplyr::select((1:5)), mapa_RMD %>% dplyr::select((1:5)))
+      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
     }
     }else{
-      mapa_hidro_pol<-mapa_RMD %>% select((1:5))
-      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% select((1:5)))
+      mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
+      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
     }
     }else{
       if(!is.null(mapa_MDA)){
       mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
       if(length(mapa_MDA$geometry)==0){
-        mapa_hidro<-mapa_RMS %>% select((1:5))
+        mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
         mapa_hidro_pol<-NULL
       }else{
-        mapa_MDA<-st_buffer(mapa_MDA, 0)
-        mapa_hidro_pol<-mapa_MDA %>% select((1:5))
-        mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% select((1:5)))
+        mapa_hidro_pol<-mapa_MDA %>% dplyr::select((1:5))
+        mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
       }
       }else{
-        mapa_hidro<-mapa_RMS %>% select((1:5))
+        mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
         mapa_hidro_pol<-NULL
       }
     }
   }else{
     if(!is.null(mapa_RMD)){
-      mapa_RMD<-st_buffer(mapa_RMD, 0)
 
       if(!is.null(mapa_MDA)){
       mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
 
         if(length(mapa_MDA$geometry)==0){
-          mapa_hidro_pol<-mapa_RMD %>% select((1:5))
-          media_poli<-st_buffer(mapa_hidro_pol, 30)
+          mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
         }else{
-          mapa_MDA<-st_buffer(mapa_MDA, 0)
-          mapa_hidro_pol<-rbind(mapa_MDA %>% select((1:5)), mapa_RMD %>% select((1:5)))
-          media_poli<-st_buffer(mapa_hidro_pol, 30)
+          mapa_hidro_pol<-rbind(mapa_MDA %>% dplyr::select((1:5)), mapa_RMD %>% dplyr::select((1:5)))
         }
       }else{
-        mapa_hidro_pol<-mapa_RMD %>% select((1:5))
-        media_poli<-st_buffer(mapa_hidro_pol, 30)
+        mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
       }
     }else{
       if(!is.null(mapa_MDA)){
@@ -87,9 +84,7 @@ CARapp_APP_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
         if(length(mapa_MDA$geometry)==0){
           mapa_hidro_pol<-NULL
         }else{
-          mapa_MDA<-st_buffer(mapa_MDA, 0)
-          mapa_hidro_pol<-mapa_MDA %>% select((1:5))
-          media_poli<-st_buffer(mapa_hidro_pol, 30)
+          mapa_hidro_pol<-mapa_MDA %>% dplyr::select((1:5))
         }
       }else{
         mapa_hidro_pol<-NULL
@@ -97,8 +92,18 @@ CARapp_APP_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     }
   }
 
-  mapa_NAS<-st_buffer(mapa_NAS %>% select((1:5)), 15)
+  mapa_NAS<-st_buffer(mapa_NAS %>% dplyr::select((1:5)), 15)
 
+  lista.classe<-NULL
+
+  if(tipo == "tudo"){
+    lista.classe<-c("micro","peq1","peq2","media","grande")
+    mapa.geral<-NULL
+    tipo<-lista.classe[1]
+    i<-1
+
+  }
+  repeat{
   if(tipo == "micro"){
 
     cars<-propriedades[[1]]
@@ -123,6 +128,10 @@ CARapp_APP_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     appm<-20
     prop<-"Media"
 
+    if(!is.null(mapa_hidro_pol)){
+      media_poli<-st_buffer(mapa_hidro_pol, 30)
+    }
+
   }else if(tipo == "grande"){
 
     cars<-propriedades[[5]]
@@ -146,7 +155,7 @@ CARapp_APP_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
   if(tipo != "media"){
     app_original<-st_buffer(mapa_hidro, appm)
   }else{
-    rios<-st_buffer(mapa_RMS %>% select((1:5)), 20)
+    rios<-st_buffer(mapa_RMS %>% dplyr::select((1:5)), 20)
     if(!is.null(mapa_hidro_pol)){
     app_original<-rbind(media_poli, rios)
     }else{app_original<-rios}
@@ -173,10 +182,27 @@ CARapp_APP_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
   #uso_app<-uso_app %>% group_by(CLASSE_USO) %>% summarize()
   uso_app<-st_collection_extract(uso_app, "POLYGON") %>% group_by(CLASSE_USO) %>% summarise()
   uso_app$C_PROP<-prop
-  uso_app$MUN<-unique(CAR$NOM_MUNICI)
-  uso_app$AREA_HA <- round(as.numeric(st_area(uso_app, by_feature = TRUE)/10000),2)
-  uso_app<-st_as_sf(as.data.frame(uso_app))
   uso_app<-uso_app %>% rename ("C_USO" = "CLASSE_USO")
+  uso_app$MUN<-unique(CAR$NOM_MUNICI)
+  uso_app$AREA_HA <- round(as.numeric(st_area(uso_app)/10000),2)
+  uso_app<-st_as_sf(as.data.frame(uso_app))
 
-return(uso_app)
+  if(is.null(lista.classe)){
+    return(uso_app)
+    break
+  }else if(i < 5){
+    if(is.null(mapa.geral)){
+      mapa.geral<-uso_app
+    }else{
+      mapa.geral<-rbind(mapa.geral,uso_app)
+    }
+    i<-i+1
+    tipo<-lista.classe[i]
+  }else{
+    mapa.geral<-rbind(mapa.geral,uso_app)
+    return(mapa.geral)
+    break
+  }
+
+  }
 }
