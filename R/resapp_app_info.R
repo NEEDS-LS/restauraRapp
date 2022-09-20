@@ -27,18 +27,18 @@
 #' @export
 #' @examples
 #' #Para executar o tipo "df" é necessário todos os resultados da função gCARapp()
-#' dados.CARapp<-CARapp_APP_info(CARapp,CARapp_out1,CARapp_out2,tipo="df")
+#' dados.CARapp<-resapp_app_info(CARapp,CARapp_out1,CARapp_out2,tipo="df")
 #'
 #' # A opção "all" é executada apenas para os resultados das análises das áreas que possuem CAR.
-#' poligonos.CARapp<-CARapp_APP_info(CARapp, tipo="all")
+#' poligonos.CARapp<-resapp_app_info(CARapp, tipo="all")
 #'
 #' # Por fim, a opção "prop" leva em consideração apenas os resultados das análises das áreas que
 #' #possuem CAR e os polígonos do CAR que não estão cancelados por decisão administrativa.
-#' propriedade.CARapp<-CARapp_APP_info(CARapp, CAR, tipo="prop")
+#' propriedade.CARapp<-resapp_app_info(CARapp, CAR, tipo="prop")
 #'
 
 
-CARapp_APP_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, tipo){
+resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, tipo){
   if(tipo == "all"){
     CARapp$C_USO<-rm_accent(CARapp$C_USO)
     CARapp<-CARapp %>% mutate(SIT =

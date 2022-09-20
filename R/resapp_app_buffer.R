@@ -13,13 +13,13 @@
 #' @return Objeto sf referente ao uso do solo dentro do buffer criado.
 #' @export
 #' @examples
-#' APP_micro<-CARapp_APP_buffer(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,CAR,uso,tipo="micro")
+#' APP_micro<-resapp_app_buffer(mapa_MDA,mapa_RMS,mapa_RMD,mapa_NAS,CAR,uso,tipo="micro")
 #'
 #' #caso não exista Massas d'água e/ou Rios de margem dupla
-#' APP_micro<-CARapp_APP_buffer(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo="micro")
+#' APP_micro<-resapp_app_buffer(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo="micro")
 #'
 
-CARapp_APP_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
+resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
 
   if(!is.null(mapa_MDA)){
   mapa_MDA<-st_buffer(mapa_MDA, 0)

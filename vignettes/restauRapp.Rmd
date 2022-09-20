@@ -17,9 +17,9 @@ knitr::opts_chunk$set(
 ```
 
 
-#Pacote CAR_APP
+#Pacote restauRapp
 
-Este documento descreve as funcionalidades do pacote "CARapp". O Objetivo do pacote é auxiliar na delimitação dos passivos ambientais  nas áreas de preservação permanentes (APPs) hídricas de propriedades rurais no território brasileiro.
+Este documento descreve as funcionalidades do pacote "restauRapp". O Objetivo do pacote é auxiliar na delimitação dos passivos ambientais  nas áreas de preservação permanentes (APPs) hídricas de propriedades rurais no território brasileiro.
 
 Com a promulgação da Lei de Proteção da Vegetação Nativa (LPVN - [Lei 12.651, de 25 de maio de 2012](http://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12651.htm), ou Novo Código Florestal) em 2012, a delimitação das Áreas de Preservação Permanentes (APPs) passíveis de serem restauradas foi alterada, e tornou-se dependente do tamanho das propriedades, baseado no número de módulos fiscais. Consequentemente,  informações referentes ao tamanho do módulo fiscal, que varia de município para município, e o tamanho da propriedade, que pode ser obtido através do [CAR](https://www.car.gov.br/) (Cadastro Ambiental Rural) são necessárias para a correta delimitação das áreas de passivo ambiental.
 
@@ -29,7 +29,7 @@ Para a criação das áreas a serem restauradas é usado a hidrografia disponibi
 
 As informações cartográficas sobre o uso do solo podem ser de diversas fontes. O padrão é o dado também disponível na base de dados da [FBDS](https://www.fbds.org.br/), contudo outras fontes de dados como o MapBiomas, ou qualquer outro mapeamento, também podem ser utilizados para fornecer estas informações.
 
-Inicialmente precisamos baixar o pacote *CARapp* e iremos fazer isso do [repositório do NEEDS](https://github.com/NEEDS-LS) no gitHub. Caso você não tenha o pacote devtools, comece baixando ele.
+Inicialmente precisamos baixar o pacote *restauRapp* e iremos fazer isso do [repositório do NEEDS](https://github.com/NEEDS-LS) no gitHub. Caso você não tenha o pacote devtools, comece baixando ele.
 ```{r, eval=FALSE}
 install.packages("devtools")
 library(devtools)
@@ -63,10 +63,10 @@ axis(1)
 axis(2)
 ```
 
-Para obter os dados de hidrografia e uso do solo padrões para o pacote (FBDS) basta executar a função *CARapp_FBDS_dados()*. Esta função recebe a sigla do estado a qual o município foco esta localizdo e o nome do município em caixa alta, separado por "_" quando necessário, como mostrado no exemplo a seguir.
+Para obter os dados de hidrografia e uso do solo padrões para o pacote (FBDS) basta executar a função *resapp_fbds_dados()*. Esta função recebe a sigla do estado a qual o município foco esta localizdo e o nome do município em caixa alta, separado por "_" quando necessário, como mostrado no exemplo a seguir.
 
 ```{r}
-CARapp_FBDS_dados("SP","BURI")
+resapp_fbds_dados("SP","BURI")
 
 #Caso seja um nome composto
 #CARapp_FBDS_dados("SP","CAMPINA_DO_MONTE_ALEGRE")
@@ -76,50 +76,46 @@ Esta função irá criar um diretório dentro do seu projeto para salvar as info
 
 É necessário inicialmente tratarmos algumas práticas, como o sistema de referência de coordenadas (do inglês CRS - Coordinate Reference System), sempre utilizar aquele que melhor se enquadre em sua região desde que o mesmo esteja em UTM (unidade em metros) e essa conversão deve ser feita para todas informações cartográficas utilizadas.Para isso podemos utilizar a função especifica proveniente do pacote sf, como mostrado no exemplo abaixo. No caso de Buri, usaremos o EPSG 31982, referente ao SIRGAS 2000/ UTM zone 22s.
 
-**Precisa ver que tipo mais de limpeza precisa ser costumeiramente feita, e tvz gerar uma funcao pra resolver isso**
-
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 BURI_USO<-st_transform(BURI_USO, 31982)
 ```
 
-**Aqui eu acho q precisamos ver, pq a funcao separaTamanho() acho q tvz deva ir para dentro da funcao q vai ser corrigiga para ficar independente do tamanho. Mas tb deixa-la como funcao independente**
-
-A partir daqui executaremos as funções deste pacote, começando pela função *CARapp_CAR_class()*. O parâmetro nesta função é apenas o objeto na qual as informações do CAR estão mantidos e o retorno é uma lista com os tamanhos separados de acordo com o número de módulos fiscais divididos nos grupos: micro (< 1 módulo fiscal), pequenas entre 1 e 2 módulos fiscais, pequenas entre 2 e 4 módulos fiscais, médias (entre 4 e 10 módulos fiscais) e grandes (> 10 módulos fiscais).
+A partir daqui executaremos as funções deste pacote, começando pela função *resapp_car_class()*. O parâmetro nesta função é apenas o objeto na qual as informações do CAR estão mantidos e o retorno é uma lista com os tamanhos separados de acordo com o número de módulos fiscais divididos nos grupos: micro (< 1 módulo fiscal), pequenas entre 1 e 2 módulos fiscais, pequenas entre 2 e 4 módulos fiscais, médias (entre 4 e 10 módulos fiscais) e grandes (> 10 módulos fiscais).
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-propriedades<-CARapp_CAR_class(BURI_CAR)
+propriedades<-resapp_car_class(BURI_CAR)
 
 micro<-propriedades[[1]]
-peq12<-propriedades[[2]]
-peq24<-propriedades[[3]]
-media<-propriedades[[4]]
-grand<-propriedades[[5]]
+#peq12<-propriedades[[2]]
+#peq24<-propriedades[[3]]
+#media<-propriedades[[4]]
+#grand<-propriedades[[5]]
+
+micro
 ```
 
-**Aqui para a vignette, tvz baste executar uma delas apenas. Qual é a mais rápida? Micro? Peq12? Apesar de ser legal ter o mapa todo.... Temos que pensar**
 
-Agora vamos executar a função *CARapp_APP_buffer()* que vai criar os buffers e recortar o uso de solo dentro das áreas definidas para restauração para cada classe de propriedades. Essa função demanda um poder de processamento considerável e pode demorar, por esse motivo atualmente ela se encontra com um parâmetro para ser executada em partes, separada por classe de tamanho. Um parâmetro para execução completa será disponibilizado em breve.
+
+Agora vamos executar a função *resapp_app_buffer()* que vai criar os buffers e recortar o uso de solo dentro das áreas definidas para restauração para cada classe de propriedades. Essa função demanda um poder de processamento considerável e pode demorar, por esse motivo atualmente ela se encontra com um parâmetro para ser executada em partes, separada por classe de tamanho, e outro para execução completa das cinco diferentes classes.
 
 Também se encontra disponivel dois cenários para avaliação das áreas sem CAR, considerando que todo o território é ocupado por propriedades rurais. No primeiro cenário tratamos essas áreas sem CAR como micro propriedades e no segundo consideramos toda a área como grande propriedade, isso representa os valores mínimos e máximos que podem ser restaurados nessas áreas.
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-REST_micro<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
+REST_micro<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
                               BURI_NAS, BURI_CAR, BURI_USO, tipo = "micro")
-#REST_peq12<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
+#REST_peq12<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
 #                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "peq1")
-#REST_peq24<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
+#REST_peq24<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
 #                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "peq2")
-#REST_media<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
+#REST_media<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
 #                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "media")
-#REST_grand<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
+#REST_grand<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
 #                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "grande")
-#REST_cena1<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
+#REST_cena1<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
 #                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "out1")
-#REST_cena2<-CARapp_APP_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
+#REST_cena2<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
 #                              BURI_NAS, BURI_CAR, BURI_USO, tipo = "out2")
 ```
-
-**Aqui precisa ver se precisa tudo isso**
 
 Aqui mostramos como unir todos os objetos e um exemplo para salvar as informações. Caso aconteça algum problema com uso de memória pelo R é interessante salvar cada classe de tamanho em separado e posteriormente junta-lo.
 
@@ -128,18 +124,18 @@ mapa_geral<-rbind(REST_micro, REST_peq12, REST_peq24, REST_media, REST_grand)
 st_write(mapa_geral, dsn="./sua_pasta_de_dados", "CAR_APP_BURI_SP", driver="ESRI Shapefile")
 ```
 
-Como resultado temos o uso do solo dentro do buffer para restauração e podemos calcular a quantidade de área com vegetação nativa e o que precisa ser recuperado. Deste modo apresentamos a função *CARapp_APP_info()*, está função é responsavel por retornar três diferentes tipos de resultados: I) as áreas que, separadas por classe de tamanho que precisam ser restauradas ou que se encontram preservadas com informações cartográficas; II) Informações das áreas a serem restauradas ou que se encontram preservadas por classe de tamanho na forma de tabela de dados para impressão; III) Uma tabela de dados contendo as informações do que deve ser resutarado ou se encontra preservado por propriedade.
+Como resultado temos o uso do solo dentro do buffer para restauração e podemos calcular a quantidade de área com vegetação nativa e o que precisa ser recuperado. Deste modo apresentamos a função *resapp_app_info()*, está função é responsavel por retornar três diferentes tipos de resultados: I) as áreas que, separadas por classe de tamanho que precisam ser restauradas ou que se encontram preservadas com informações cartográficas; II) Informações das áreas a serem restauradas ou que se encontram preservadas por classe de tamanho na forma de tabela de dados para impressão; III) Uma tabela de dados contendo as informações do que deve ser resutarado ou se encontra preservado por propriedade.
 
 ```{r, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
 #Para executar o tipo "df" é necessário todos os resultados da função gCARapp()
-  dados.CARapp<-CARapp_APP_info(BURI_APP,BURI_OUT1,BURI_OUT2,tipo="df")
+  dados.CARapp<-resapp_app_info(BURI_APP,BURI_OUT1,BURI_OUT2,tipo="df")
 
 # A opção "all" é executada apenas para os resultados das análises das áreas que possuem CAR.
-  poligonos.CARapp<-CARapp_APP_info(BURI_APP, tipo="all")
+  poligonos.CARapp<-resapp_app_info(BURI_APP, tipo="all")
 
 # Por fim, a opção "prop" leva em consideração apenas os resultados das análises das áreas que
 #possuem CAR.
-  propriedade.CARapp<-CARapp_APP_info(BURI_APP, BURI_CAR, tipo="prop")
+  propriedade.CARapp<-resapp_app_info(BURI_APP, BURI_CAR, tipo="prop")
 ```
 
 Aqui, por exemplo, está a tabela de dados das APPs por classe de tamanho.
@@ -148,10 +144,10 @@ Aqui, por exemplo, está a tabela de dados das APPs por classe de tamanho.
 knitr::kable(dados.CARapp)
 ```
 
-Por fim, vamos dar uma olhada em algumas informações sobre o CAR que podem ser obtidas usando a função *CARapp_CAR_info()*.
+Por fim, vamos dar uma olhada em algumas informações sobre o CAR que podem ser obtidas usando a função *resapp_car_info()*.
 
 ```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
-df.CAR<-CARapp_CAR_info(BURI_CAR)
+df.CAR<-resapp_car_info(BURI_CAR)
 ```
 
 ```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}

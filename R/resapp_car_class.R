@@ -6,14 +6,14 @@
 #' @export
 #' @examples
 #'
-#' props<-CARapp_CAR_class(mapa_CAR)
+#' props<-resapp_car_class(mapa_CAR)
 #' micro<-props[[1]]
 #' peq12<-props[[2]]
 #' peq24<-props[[3]]
 #' media<-props[[4]]
 #' grand<-props[[5]]
 
-CARapp_CAR_class<-function(mapa_CAR){
+resapp_car_class<-function(mapa_CAR){
 
   mapa_CAR<-st_buffer(mapa_CAR, 0)
 

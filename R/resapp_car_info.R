@@ -10,11 +10,11 @@
 #' @return Objeto data frame referente às propriedades cadastradas no SICAR
 #' @export
 #' @examples
-#' df.CAR<-CARapp_CAR_info(CAR)
+#' df.CAR<-resapp_car_info(CAR)
 #'
 #'
 
-CARapp_CAR_info<-function(CAR, mun = NULL, tipo = NULL){
+resapp_car_info<-function(CAR, mun = NULL, tipo = NULL){
 
   CAR<-CAR[CAR$SITUACAO != "CA",]
 

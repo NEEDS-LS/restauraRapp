@@ -6,9 +6,9 @@
 #' @return os dados de uso do solo e de Hidrografia da FBDS
 #' @export
 #' @examples
-#' dado.municipio<-CARapp_FBDS_dados("SP", "CAMPINA_DO_MONTE_ALEGRE")
+#' dado.municipio<-resapp_fbds_dados("SP", "CAMPINA_DO_MONTE_ALEGRE")
 
-CARapp_FBDS_dados<-function(estado, municipio){
+resapp_fbds_dados<-function(estado, municipio){
 
   lista.files.uso = readLines(
     paste('http://geo.fbds.org.br/',estado,'/',municipio,'/USO/', sep = ""))
