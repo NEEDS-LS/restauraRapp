@@ -6,12 +6,12 @@
 #' retornar os polígonos destas áreas, um data frame com os valores ou o que existe existe
 #' de cada categoria dentro das propriedades cadastradas no CAR.
 #'
-#' @param CARapp Objeto resultante da execução da função principal gCARapp() para as propriedades
+#' @param CARapp Objeto resultante da execução da função principal resapp_app_buffer() para as propriedades
 #'  que possuem CAR registrado, é recomendavel que todos os tamanhos, exceto os cenários disponíveis,
 #'  etejam em um unico objeto.
-#' @param CARapp_out1 Objeto resultante da execução da função principal gCARapp(), com tipo "out1",
+#' @param CARapp_out1 Objeto resultante da execução da função principal resapp_app_buffer(), com tipo "out1",
 #'  ou seja, considerando as áreas sem CAR como micro propriedades. Pode ser NULL.
-#' @param CARapp_out2 Objeto resultante da execução da função principal gCARapp(), com tipo "out2",
+#' @param CARapp_out2 Objeto resultante da execução da função principal resapp_app_buffer(), com tipo "out2",
 #'  ou seja, considerando as áreas sem CAR como grande propriedades. Pode ser NULL.
 #' @param CAR Objeto contendo os polígonos com as áreas das propriedades registradas no CAR.
 #'  Pode ser NULL.
@@ -72,6 +72,7 @@ resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
                                           C_USO == "formacao florestal" ~ "Preservado",
                                           C_USO == "formacao nao florestal" ~ "Preservado"))
     clipped_app<-clipped_app %>% group_by(C_PROP, MUN, SIT) %>% summarise(AREA_HA = sum(AREA_HA))
+    clipped_app<-st_drop_geometry(clipped_app)
 
     rest<-clipped_app[clipped_app$SIT=="Restaurar",]
     pres<-clipped_app[clipped_app$SIT=="Preservado",]
@@ -93,10 +94,13 @@ resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     l.grand<-c("Grande",
                rest$AREA_HA[rest$C_PROP=="Grande"],
                pres$AREA_HA[pres$C_PROP=="Grande"])
-    l.out1<-c("Cenário 1 (Micro)",
+    l.total<-c("Cenário 1 (Total)",
+               colSums(rest[1:5,4]),
+               colSums(pres[1:5,4]))
+    l.out1<-c("Cenário 2 (Micro)",
               rest$AREA_HA[rest$C_PROP=="Sem CAR (Micro)"],
               pres$AREA_HA[pres$C_PROP=="Sem CAR (Micro)"])
-    l.out2<-c("Cenário 2 (Grande)",
+    l.out2<-c("Cenário 3 (Grande)",
               rest$AREA_HA[rest$C_PROP=="Sem CAR (Grande)"],
               pres$AREA_HA[pres$C_PROP=="Sem CAR (Grande)"])
 
@@ -105,10 +109,11 @@ resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     names(l.peq23)<-l.col.data
     names(l.media)<-l.col.data
     names(l.grand)<-l.col.data
+    names(l.total)<-l.col.data
     names(l.out1)<-l.col.data
     names(l.out2)<-l.col.data
 
-    l.all.data<-list(l.micro,l.peq12,l.peq23,l.media,l.grand,l.out1,l.out2)
+    l.all.data<-list(l.micro,l.peq12,l.peq23,l.media,l.grand,l.total,l.out1,l.out2)
 
     t.data<-as.data.frame(do.call("rbind", l.all.data))
 

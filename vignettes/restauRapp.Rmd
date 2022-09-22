@@ -37,16 +37,16 @@ library(devtools)
 
 E agora baixo o pacote CARapp do nosso diretório.
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
-devtools::install_github("NEEDS-LS/CARapp")
+devtools::install_github("NEEDS-LS/restauRapp")
 ```
 
 ```{r setup, message=FALSE}
-library(CARapp)
+library(restauRapp)
 ```
 
 No nosso pacote estão disponíveis uma série de dados para você se familiarizar com o pacote. Agora iremos verificar quais conjuntos de dados tempos disponíveis.
 ```{r}
-data(package = "CARapp") 
+data(package = "restauRapp") 
 ```
 
 Iremos usar como exemplo os dados do município de Buri, no estado de São Paulo. Nesse município esta localizado o campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
