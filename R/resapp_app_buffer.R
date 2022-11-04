@@ -129,7 +129,7 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     prop<-"Media"
 
     if(!is.null(mapa_hidro_pol)){
-      media_poli<-st_buffer(mapa_hidro_pol, 30)
+      media_poli<-st_buffer(mapa_hidro_pol, 30, endCapStyle = "FLAT")
     }
 
   }else if(tipo == "grande"){
@@ -153,9 +153,9 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
   }
 
   if(tipo != "media"){
-    app_original<-st_buffer(mapa_hidro, appm)
+    app_original<-st_buffer(mapa_hidro, appm, endCapStyle = "FLAT")
   }else{
-    rios<-st_buffer(mapa_RMS %>% dplyr::select((1:5)), 20)
+    rios<-st_buffer(mapa_RMS %>% dplyr::select((1:5)), 20, endCapStyle = "FLAT")
     if(!is.null(mapa_hidro_pol)){
     app_original<-rbind(media_poli, rios)
     }else{app_original<-rios}
@@ -168,7 +168,6 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     app_original<-st_difference(app_original, mapa_hidro_pol)
   }
 
-#as diferentes geometria aparecem a partir do recorte entre app_original e cars.
   if(tipo != "out1" & tipo != "out2"){
     rec_app<-st_intersection(app_original, cars)
     rec_app<-st_buffer(rec_app, 0)

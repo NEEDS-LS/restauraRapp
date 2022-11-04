@@ -1,8 +1,8 @@
 ---
-title: "CARapp"
+title: "restauraRapp"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{CARapp}
+  %\VignetteIndexEntry{restauraRapp}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 
-#Pacote restauRapp
+#Pacote restauraRapp
 
 Este documento descreve as funcionalidades do pacote "restauRapp". O Objetivo do pacote é auxiliar na delimitação dos passivos ambientais  nas áreas de preservação permanentes (APPs) hídricas de propriedades rurais no território brasileiro.
 
@@ -37,16 +37,16 @@ library(devtools)
 
 E agora baixo o pacote CARapp do nosso diretório.
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
-devtools::install_github("NEEDS-LS/restauRapp")
+devtools::install_github("NEEDS-LS/restauraRapp")
 ```
 
 ```{r setup, message=FALSE}
-library(restauRapp)
+library(restauraRapp)
 ```
 
 No nosso pacote estão disponíveis uma série de dados para você se familiarizar com o pacote. Agora iremos verificar quais conjuntos de dados tempos disponíveis.
 ```{r}
-data(package = "restauRapp") 
+data(package = "restauraRapp") 
 ```
 
 Iremos usar como exemplo os dados do município de Buri, no estado de São Paulo. Nesse município esta localizado o campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
@@ -119,7 +119,7 @@ REST_micro<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD,
 
 Aqui mostramos como unir todos os objetos e um exemplo para salvar as informações. Caso aconteça algum problema com uso de memória pelo R é interessante salvar cada classe de tamanho em separado e posteriormente junta-lo.
 
-```{r, echo=FALSE, eval=FALSE}
+```{r, echo=TRUE, eval=FALSE}
 mapa_geral<-rbind(REST_micro, REST_peq12, REST_peq24, REST_media, REST_grand)
 st_write(mapa_geral, dsn="./sua_pasta_de_dados", "CAR_APP_BURI_SP", driver="ESRI Shapefile")
 ```
