@@ -1,4 +1,4 @@
-Package: CARapp
+Package: restauraRapp
 Type: Package
 Title: Calculates the deficit of Permanente Protected Area along the water courses based on land use and property size (CAR)
 Version: 0.0.0.9001
