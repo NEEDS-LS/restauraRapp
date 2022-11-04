@@ -30,7 +30,7 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
   CAR<-st_buffer(CAR, 0)
   uso<-st_buffer(uso, 0)
 
-  propriedades<-CARapp_CAR_class(CAR)
+  propriedades<-resapp_car_class(CAR)
   if(tipo != "media"){
   if(!is.null(mapa_RMD)){
 
