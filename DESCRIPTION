@@ -1,7 +1,7 @@
 Package: restauraRapp
 Type: Package
 Title: Calculates the deficit of Permanente Protected Area along the water courses based on land use and property size (CAR)
-Version: 0.0.0.9001
+Version: 0.0.1
 Authors@R:
  c(person(given = "Julio",
            family = "Araújo",

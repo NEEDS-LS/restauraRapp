@@ -100,9 +100,15 @@ resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     l.out1<-c("Cenário 2 (Micro)",
               rest$AREA_HA[rest$C_PROP=="Sem CAR (Micro)"],
               pres$AREA_HA[pres$C_PROP=="Sem CAR (Micro)"])
+    l.totalC2<-c("Cenário 2 (Total)",
+               colSums(rest[1:5,4])+rest$AREA_HA[rest$C_PROP=="Sem CAR (Micro)"],
+               colSums(pres[1:5,4])+pres$AREA_HA[pres$C_PROP=="Sem CAR (Micro)"])
     l.out2<-c("Cenário 3 (Grande)",
               rest$AREA_HA[rest$C_PROP=="Sem CAR (Grande)"],
               pres$AREA_HA[pres$C_PROP=="Sem CAR (Grande)"])
+    l.totalC3<-c("Cenário 3 (Total)",
+                 colSums(rest[1:5,4])+rest$AREA_HA[rest$C_PROP=="Sem CAR (Grande)"],
+                 colSums(pres[1:5,4])+pres$AREA_HA[pres$C_PROP=="Sem CAR (Grande)"])
 
     names(l.micro)<-l.col.data
     names(l.peq12)<-l.col.data
@@ -111,9 +117,12 @@ resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     names(l.grand)<-l.col.data
     names(l.total)<-l.col.data
     names(l.out1)<-l.col.data
+    names(l.totalC2)<-l.col.data
     names(l.out2)<-l.col.data
+    names(l.totalC3)<-l.col.data
 
-    l.all.data<-list(l.micro,l.peq12,l.peq23,l.media,l.grand,l.total,l.out1,l.out2)
+    l.all.data<-list(l.micro,l.peq12,l.peq23,l.media,l.grand,l.total,l.out1,l.totalC2,
+                     l.out2,l.totalC3)
 
     t.data<-as.data.frame(do.call("rbind", l.all.data))
 
@@ -154,11 +163,6 @@ resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     CAR.df$REST_ha[is.na(CAR.df$REST_ha)]<-0
     CAR.df$PRES_ha[is.na(CAR.df$PRES_ha)]<-0
 
-    CAR.df<-CAR.df %>% mutate(max_rest = case_when(NUM_MODULO < 2 ~ NUM_AREA*0.1,
-                                                   NUM_MODULO >= 2 & NUM_MODULO < 4 ~ NUM_AREA*0.2,
-                                                   NUM_MODULO >= 4 ~ 0))
-
-    CAR.df$max_rest[CAR.df$PRES_ha==0 & CAR.df$REST_ha==0]<-0
     CAR.df<-st_drop_geometry(CAR.df)
 
     return(CAR.df)
