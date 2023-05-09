@@ -1,23 +1,22 @@
 ---
-title: "restauraRapp"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{restauraRapp}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
+output: github_document
 ---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
 )
 ```
 
+# restauraRapp
 
-#Pacote restauraRapp
+<!-- badges: start -->
+<!-- badges: end -->
 
 Este documento descreve as funcionalidades do pacote "restauRapp". O Objetivo do pacote é auxiliar na delimitação dos passivos ambientais  nas áreas de preservação permanentes (APPs) hídricas de propriedades rurais no território brasileiro.
 
@@ -30,34 +29,33 @@ Para a criação das áreas a serem restauradas é usado a hidrografia disponibi
 As informações cartográficas sobre o uso do solo podem ser de diversas fontes. O padrão é o dado também disponível na base de dados da [FBDS](https://www.fbds.org.br/), contudo outras fontes de dados como o MapBiomas, ou qualquer outro mapeamento, também podem ser utilizados para fornecer estas informações.
 
 Inicialmente precisamos baixar o pacote *restauRapp* e iremos fazer isso do [repositório do NEEDS](https://github.com/NEEDS-LS) no gitHub. Caso você não tenha o pacote devtools, comece baixando ele.
-```{r, eval=FALSE}
-install.packages("devtools")
-library(devtools)
-```
 
-E agora baixo o pacote CARapp do nosso diretório.
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
+## Instalação
+
+Você pode instalar a versão de desenvolvedor do pacote restauraRapp do [GitHub](https://github.com/) com:
+
+``` r
+# install.packages("devtools")
 devtools::install_github("NEEDS-LS/restauraRapp")
 ```
 
-```{r setup, message=FALSE}
+## Exemplo
+
+Iremos usar como exemplo os dados do município de Buri, no estado de São Paulo. Nesse município esta localizado o campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado. Para isso vamos carregar o pacote no R.
+
+```{r example}
 library(restauraRapp)
 ```
 
-No nosso pacote estão disponíveis uma série de dados para você se familiarizar com o pacote. Agora iremos verificar quais conjuntos de dados tempos disponíveis.
-```{r}
-data(package = "restauraRapp") 
-```
+E vamos acessar as informações do município de Buri que já vem inseridas no pacote para exploração das funções.
 
-Iremos usar como exemplo os dados do município de Buri, no estado de São Paulo. Nesse município esta localizado o campus [Lagoa do Sino](https://www.lagoadosino.ufscar.br/) da Universidade Federal de São Carlos ([UFSCar](https://www2.ufscar.br/))onde o [NEEDS](https://www.needs.ufscar.br/) fica locaizado.
-
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 data("BURI")
 ```
 
 Para obter os dados de hidrografia e uso do solo padrões para o pacote (FBDS) basta executar a função *resapp_fbds_dados()*. Esta função recebe a sigla do estado a qual o município foco esta localizado e o nome do município em caixa alta, separado por "_" quando necessário, como mostrado no exemplo a seguir. É recomendado a criação de um projeto antes da execução das funções aqui mostradas, pois muitas delas criam pastas para armazenar os resultados, mantendo o ambiente organizado. 
 
-```{r}
+```{r, eval=FALSE}
 resapp_fbds_dados("SP","BURI")
 
 #Caso seja um nome composto
@@ -68,13 +66,13 @@ resapp_fbds_dados("SP","BURI")
 
 É necessário inicialmente tratarmos algumas práticas, como o processo para abrir os dados e o sistema de referência de coordenadas (do inglês CRS - Coordinate Reference System). Para abrir os dados é importante utilizar o parâmetro "options" do "st_read", pois os dados de uso do solo da FBDS possuem, por padrão, acentos, isso evitará possíveis problemas de inconsistência. Já para o CRS, sempre utilizar aquele que melhor se enquadre em sua região desde que o mesmo esteja em UTM (unidade em metros) e essa conversão deve ser feita para todas informações cartográficas utilizadas.Para isso podemos utilizar a função especifica proveniente do pacote sf, como mostrado no exemplo abaixo. No caso de Buri, usaremos o EPSG 31982, referente ao SIRGAS 2000/ UTM zone 22s.
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
 BURI_USO<-st_transform(BURI_USO, 31982) #exemplo de como alterar o CRS
 ```
 
 Algumas vezes os arquivos espaciais, principalmente aqueles formados por polígonos, como o uso do solo e as hidrografias contendo os rios de margem dupla e massas d'água, podem conter algum erros, como vértices duplicados ou intercessão de linhas do polígono. Uma forma de solucionar isso é criar um buffer nesses objetos de comprimento “0” ou executar a função “st_make_valid” do pacote “sf”. Normalmente o buffer funciona melhor, contudo a problemas que nem permitem a execução do buffer, neste caso a solução será executar o "st_make_valid".
 
-```{r}
+```{r, eval=FALSE}
 BURI_USO<-st_buffer(BURI_USO, 0)#correção com o buffer de comprimento "0"
 
 BURI_USO<-st_make_valid(BURI_USO)#correção com a função do pacote "sf"
@@ -82,7 +80,7 @@ BURI_USO<-st_make_valid(BURI_USO)#correção com a função do pacote "sf"
 
 A partir daqui executaremos as funções deste pacote, começando pela função *resapp_car_class()*. O parâmetro nesta função é apenas o objeto na qual as informações do CAR estão mantidos e o retorno é uma lista com os tamanhos separados de acordo com o número de módulos fiscais divididos nos grupos: micro (< 1 módulo fiscal), pequenas entre 1 e 2 módulos fiscais, pequenas entre 2 e 4 módulos fiscais, médias (entre 4 e 10 módulos fiscais) e grandes (> 10 módulos fiscais).
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+```{r, eval=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
 propriedades<-resapp_car_class(BURI_CAR)
 
 micro<-propriedades[[1]]
@@ -99,7 +97,7 @@ Agora vamos executar a função *resapp_app_buffer()* que vai criar os buffers e
 
 Também se encontra disponivel dois cenários para avaliação das áreas sem CAR, considerando que todo o território é ocupado por propriedades rurais. No primeiro cenário tratamos essas áreas sem CAR como micro propriedades e no segundo consideramos toda a área como grande propriedade, isso representa os valores mínimos e máximos que podem ser restaurados nessas áreas.
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+```{r, eval=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
 
 #função para execução de todas as classes de tamanho segundo o CAR
 REST_prop<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD, 
@@ -129,7 +127,7 @@ REST_cena2<-resapp_app_buffer(BURI_MDA, BURI_RMS, BURI_RMD,
 
 Aqui mostramos como unir todos os objetos e um exemplo para salvar as informações. Caso aconteça algum problema com uso de memória pelo R é interessante salvar cada classe de tamanho em separado e posteriormente junta-lo.
 
-```{r, echo=TRUE, eval=FALSE}
+```{r, eval=FALSE, eval=FALSE}
 mapa_geral<-rbind(REST_micro, REST_peq12, REST_peq24, REST_media, REST_grand)
 st_write(mapa_geral, dsn="./sua_pasta_de_dados", "CAR_APP_BURI_SP", 
          driver="ESRI Shapefile")
@@ -137,14 +135,14 @@ st_write(mapa_geral, dsn="./sua_pasta_de_dados", "CAR_APP_BURI_SP",
 
 Caso tenha executado a função como "tudo", ou seja, todas as classes de uma vez, basta salvar o objeto resultante.
 
-```{r, echo=TRUE, eval=FALSE}
+```{r, eval=FALSE, eval=FALSE}
 st_write(REST_prop, dsn="./sua_pasta_de_dados", "CAR_APP_BURI_SP", 
          driver="ESRI Shapefile")
 ```
 
 E, por fim, salvar os dois cenários criados
 
-```{r}
+```{r, eval=FALSE}
 st_write(REST_cena1, dsn="./sua_pasta_de_dados", "OUT_M_APP_BURI_SP", 
          driver="ESRI Shapefile")
 
@@ -168,16 +166,16 @@ Como resultado temos o uso do solo dentro do buffer para restauração e podemos
 
 Aqui, por exemplo, está a tabela de dados das APPs por classe de tamanho.
 
-```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
 knitr::kable(dados.CARapp)
 ```
 
 Por fim, vamos dar uma olhada em algumas informações sobre o CAR que podem ser obtidas usando a função *resapp_car_info()*.
 
-```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
 df.CAR<-resapp_car_info(BURI_CAR)
 ```
 
-```{r, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE}
 knitr::kable(df.CAR)
 ```
