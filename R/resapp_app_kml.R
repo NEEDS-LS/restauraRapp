@@ -44,10 +44,6 @@ resapp_app_kml<-function(app_buffer, municipio = NULL, estado = NULL){
       file.name=paste("./KML/",municipio,"_",estado,"_KML/peq24_15m_app_",municipio,"_",estado,".kml",
                       sep = ""))
 
-  kml(sep_app[sep_app$C_PROP == "Media",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/media_20m_app_",municipio,"_",estado,".kml",
-                      sep = ""))
-
   kml(sep_app[sep_app$C_PROP == "Grande",],
       file.name=paste("./KML/",municipio,"_",estado,"_KML/grande_30m_app_",municipio,"_",estado,".kml",
                       sep = ""))
@@ -62,9 +58,6 @@ resapp_app_kml<-function(app_buffer, municipio = NULL, estado = NULL){
 
   kml(res_app[res_app$C_PROP == "Pequenas 2 a 4 modulos",],
       file.name=paste("./KML/",municipio,"_",estado,"_KML/peq24_15m_restaurar_",municipio,"_",estado,".kml", sep = ""))
-
-  kml(res_app[res_app$C_PROP == "Media",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/media_20m_restaurar_",municipio,"_",estado,".kml", sep = ""))
 
   kml(res_app[res_app$C_PROP == "Grande",],
       file.name=paste("./KML/",municipio,"_",estado,"_KML/grande_30m_restaurar_",municipio,"_",estado,".kml", sep = ""))

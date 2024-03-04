@@ -88,32 +88,28 @@ resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     l.peq23<-c("Pequenas (> 2 e < 4 módulos)",
                rest$AREA_HA[rest$C_PROP=="Pequenas 2 a 4 modulos"],
                pres$AREA_HA[pres$C_PROP=="Pequenas 2 a 4 modulos"])
-    l.media<-c("Média",
-               rest$AREA_HA[rest$C_PROP=="Media"],
-               pres$AREA_HA[pres$C_PROP=="Media"])
     l.grand<-c("Grande",
                rest$AREA_HA[rest$C_PROP=="Grande"],
                pres$AREA_HA[pres$C_PROP=="Grande"])
     l.total<-c("Cenário 1 (Total)",
-               colSums(rest[1:5,4]),
-               colSums(pres[1:5,4]))
+               colSums(rest[1:4,4]),
+               colSums(pres[1:4,4]))
     l.out1<-c("Cenário 2 (Micro)",
               rest$AREA_HA[rest$C_PROP=="Sem CAR (Micro)"],
               pres$AREA_HA[pres$C_PROP=="Sem CAR (Micro)"])
     l.totalC2<-c("Cenário 2 (Total)",
-               colSums(rest[1:5,4])+rest$AREA_HA[rest$C_PROP=="Sem CAR (Micro)"],
-               colSums(pres[1:5,4])+pres$AREA_HA[pres$C_PROP=="Sem CAR (Micro)"])
+               colSums(rest[1:4,4])+rest$AREA_HA[rest$C_PROP=="Sem CAR (Micro)"],
+               colSums(pres[1:4,4])+pres$AREA_HA[pres$C_PROP=="Sem CAR (Micro)"])
     l.out2<-c("Cenário 3 (Grande)",
               rest$AREA_HA[rest$C_PROP=="Sem CAR (Grande)"],
               pres$AREA_HA[pres$C_PROP=="Sem CAR (Grande)"])
     l.totalC3<-c("Cenário 3 (Total)",
-                 colSums(rest[1:5,4])+rest$AREA_HA[rest$C_PROP=="Sem CAR (Grande)"],
-                 colSums(pres[1:5,4])+pres$AREA_HA[pres$C_PROP=="Sem CAR (Grande)"])
+                 colSums(rest[1:4,4])+rest$AREA_HA[rest$C_PROP=="Sem CAR (Grande)"],
+                 colSums(pres[1:4,4])+pres$AREA_HA[pres$C_PROP=="Sem CAR (Grande)"])
 
     names(l.micro)<-l.col.data
     names(l.peq12)<-l.col.data
     names(l.peq23)<-l.col.data
-    names(l.media)<-l.col.data
     names(l.grand)<-l.col.data
     names(l.total)<-l.col.data
     names(l.out1)<-l.col.data
@@ -121,7 +117,7 @@ resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = 
     names(l.out2)<-l.col.data
     names(l.totalC3)<-l.col.data
 
-    l.all.data<-list(l.micro,l.peq12,l.peq23,l.media,l.grand,l.total,l.out1,l.totalC2,
+    l.all.data<-list(l.micro,l.peq12,l.peq23,l.grand,l.total,l.out1,l.totalC2,
                      l.out2,l.totalC3)
 
     t.data<-as.data.frame(do.call("rbind", l.all.data))

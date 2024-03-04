@@ -23,8 +23,7 @@ resapp_car_info<-function(CAR, mun = NULL, tipo = NULL){
                                             "Pequena (1 a 2 modulos)",
                                           NUM_MODULO >= 2 & NUM_MODULO < 4 ~
                                             "Pequena (2 a 4 modulos)",
-                                          NUM_MODULO >= 4 & NUM_MODULO < 10 ~ "Media",
-                                          NUM_MODULO >= 10 ~ "Grande"))
+                                          NUM_MODULO >= 4 ~ "Grande"))
   if(!is.null(mun)){
     if(file.exists("./data_use")==FALSE){dir.create("./data_use")}
     if(file.exists("./data_use/gadm36_BRA_2_pk.rds")==FALSE){
@@ -50,7 +49,7 @@ resapp_car_info<-function(CAR, mun = NULL, tipo = NULL){
   car.map$area_ha<-as.numeric(round(units::set_units(st_area(car.map), value = ha),2))
   total.car<-car.map %>% summarise(t=n())
   car.map$total_ha<-as.numeric(round(st_area(total.car)/10000,2))
-  ordem<-c("Micro","Pequena (1 a 2 modulos)","Pequena (2 a 4 modulos)","Media","Grande")
+  ordem<-c("Micro","Pequena (1 a 2 modulos)","Pequena (2 a 4 modulos)","Grande")
   car.map<- car.map %>% arrange(factor(classe, levels = ordem))
   car.map<-st_as_sf(as.data.frame(car.map))
 
