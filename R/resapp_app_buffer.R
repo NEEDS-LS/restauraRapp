@@ -73,6 +73,7 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     mapa.geral<-NULL
     tipo<-lista.classe[1]
     i<-1
+    prop<-NA
 
   }
   repeat{
@@ -145,7 +146,7 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     if(is.null(lista.classe)){
       return(uso_app)
       break
-    }else if(i < 5){
+    }else if(i < 4){
       if(is.null(mapa.geral)){
         mapa.geral<-uso_app
       }else{
