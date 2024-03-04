@@ -9,7 +9,7 @@
 #' @param mapa_NAS Mapa da hidrográfia referente as Nascentes.
 #' @param CAR Shapefile com poligonos das propriedades do CAR.
 #' @param uso Mapa do uso do solo do local
-#' @param tipo Qual tamanho de propriedade deve ser usado, sendo "micro" para menores que 1 módulo, "Peq1" entre 1 e 2 módulos, "peq2" para 2 a 4 módulos, "media" entre 4 a 10 módulos, "grande" para maiores que 10 módulos, "out1" para modelar as áreas sem CAR como micro propriedades e "out2" para modelar as áreas sem car como grandes propriedades.
+#' @param tipo Qual tamanho de propriedade deve ser usado, sendo "micro" para menores que 1 módulo, "Peq1" entre 1 e 2 módulos, "peq2" para 2 a 4 módulos, "grande" para maiores que 4 módulos, "out1" para modelar as áreas sem CAR como micro propriedades e "out2" para modelar as áreas sem car como grandes propriedades.
 #' @return Objeto sf referente ao uso do solo dentro do buffer criado.
 #' @export
 #' @examples
@@ -21,188 +21,151 @@
 
 resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
 
-  if(!is.null(mapa_MDA)){
-  mapa_MDA<-st_buffer(mapa_MDA, 0)
-  }
-  if(!is.null(mapa_RMD)){
-  mapa_RMD<-st_buffer(mapa_RMD, 0)
-  }
-  CAR<-st_buffer(CAR, 0)
-  uso<-st_buffer(uso, 0)
+  CAR<-res_app_correctpoly(CAR)
+  uso<-res_app_correctpoly(uso)
 
   propriedades<-resapp_car_class(CAR)
-  if(tipo != "media"){
-  if(!is.null(mapa_RMD)){
 
-    if(!is.null(mapa_MDA)){
-    mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
-
-    if(length(mapa_MDA$geometry)==0){
-      mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
-      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
-    }else{
-      mapa_MDA<-st_buffer(mapa_MDA, 0)
-      mapa_hidro_pol<-rbind(mapa_MDA %>% dplyr::select((1:5)), mapa_RMD %>% dplyr::select((1:5)))
-      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
-    }
-    }else{
-      mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
-      mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
-    }
-    }else{
-      if(!is.null(mapa_MDA)){
-      mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
-      if(length(mapa_MDA$geometry)==0){
-        mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
-        mapa_hidro_pol<-NULL
+  if(!is.null(mapa_RMD)){ #verifica se existe os rios de margem dupla
+    mapa_RMD<-res_app_correctpoly(mapa_RMD) #corrige os poligonos
+    if(!is.null(mapa_MDA)){ #verifica se existe as massas d'água
+      mapa_MDA<-res_app_correctpoly(mapa_MDA) #corrige os poligonos
+      mapa_MDA<-mapa_MDA[mapa_MDA$NATUREZA != "artificial",] #separa apenas os de origem natural
+        if(length(mapa_MDA$geometry)==0){ #verifica se existe massas d'água de origem natural
+          #caso não tenha usa apenas os rios de margem dupla
+          mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
+          mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
+        }else{
+          #caso tenha junta todos os poligonos pra formar a hidrografia para o buffer
+          mapa_hidro_pol<-rbind(mapa_MDA %>% dplyr::select((1:5)), mapa_RMD %>% dplyr::select((1:5)))
+          mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
+        }
       }else{
-        mapa_hidro_pol<-mapa_MDA %>% dplyr::select((1:5))
+        #Caso as massas d'água sejam NULL, cria a hidrografia apenas com os rios de margem dupla
+        mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
         mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
       }
-      }else{
+    }else{ #aqui é caso não exista rios de margem dupla
+      if(!is.null(mapa_MDA)){ #verifica novamente a existencia de massas d'água e corrige
+        mapa_MDA<-res_app_correctpoly(mapa_MDA)
+        mapa_MDA<-mapa_MDA[mapa_MDA$NATUREZA != "artificial",]
+        if(length(mapa_MDA$geometry)==0){
+          mapa_hidro<-mapa_RMS %>% dplyr::select((1:5)) #caso não exista MDA natural usa apenas RMS
+          mapa_hidro_pol<-NULL
+        }else{
+          #caso exista cria apenas com as MDA
+          mapa_hidro_pol<-mapa_MDA %>% dplyr::select((1:5))
+          mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
+        }
+      }else{ #caso tudo seja NULL usa apenas os RMS
         mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
         mapa_hidro_pol<-NULL
       }
     }
-  }else{
-    if(!is.null(mapa_RMD)){
 
-      if(!is.null(mapa_MDA)){
-      mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
-
-        if(length(mapa_MDA$geometry)==0){
-          mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
-        }else{
-          mapa_hidro_pol<-rbind(mapa_MDA %>% dplyr::select((1:5)), mapa_RMD %>% dplyr::select((1:5)))
-        }
-      }else{
-        mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
-      }
-    }else{
-      if(!is.null(mapa_MDA)){
-        mapa_MDA<-mapa_MDA[mapa_MDA$AREA_HA > 1,]
-        if(length(mapa_MDA$geometry)==0){
-          mapa_hidro_pol<-NULL
-        }else{
-          mapa_hidro_pol<-mapa_MDA %>% dplyr::select((1:5))
-        }
-      }else{
-        mapa_hidro_pol<-NULL
-      }
-    }
-  }
 
   mapa_NAS<-st_buffer(mapa_NAS %>% dplyr::select((1:5)), 15)
 
   lista.classe<-NULL
 
   if(tipo == "tudo"){
-    lista.classe<-c("micro","peq1","peq2","media","grande")
+    lista.classe<-c("micro","peq1","peq2","grande")
     mapa.geral<-NULL
     tipo<-lista.classe[1]
     i<-1
 
   }
   repeat{
-  if(tipo == "micro"){
+    if(tipo == "micro"){
 
-    cars<-propriedades[[1]]
-    appm<-5
-    prop<-"Micro"
+      cars<-propriedades[[1]]
+      appm<-5
+      prop<-"Micro"
 
-  }else if(tipo == "peq1"){
+    }else if(tipo == "peq1"){
 
-    cars<-propriedades[[2]]
-    appm<-8
-    prop<-"Pequenas 1 a 2 modulos"
+      cars<-propriedades[[2]]
+      appm<-8
+      prop<-"Pequenas 1 a 2 modulos"
 
-  }else if(tipo == "peq2"){
+    }else if(tipo == "peq2"){
 
-    cars<-propriedades[[3]]
-    appm<-15
-    prop<-"Pequenas 2 a 4 modulos"
+      cars<-propriedades[[3]]
+      appm<-15
+      prop<-"Pequenas 2 a 4 modulos"
 
-  }else if(tipo == "media"){
+    }else if(tipo == "grande"){
 
-    cars<-propriedades[[4]]
-    appm<-20
-    prop<-"Media"
+      cars<-propriedades[[4]]
+      appm<-20
+      prop<-"Grande"
 
-    if(!is.null(mapa_hidro_pol)){
-      media_poli<-st_buffer(mapa_hidro_pol, 30, endCapStyle = "FLAT")
+    }else if(tipo == "out1"){
+
+      cars<-CAR[CAR$SITUACAO!="CA",]
+      appm<-5
+      prop<-"Sem CAR (Micro)"
+
+    }else if(tipo == "out2"){
+
+      cars<-CAR[CAR$SITUACAO!="CA",]
+      appm<-30
+      prop<-"Sem CAR (Grande)"
+
     }
 
-  }else if(tipo == "grande"){
-
-    cars<-propriedades[[5]]
-    appm<-30
-    prop<-"Grande"
-
-  }else if(tipo == "out1"){
-
-    cars<-CAR[CAR$SITUACAO!="CA",]
-    appm<-5
-    prop<-"Sem CAR (Micro)"
-
-  }else if(tipo == "out2"){
-
-    cars<-CAR[CAR$SITUACAO!="CA",]
-    appm<-30
-    prop<-"Sem CAR (Grande)"
-
-  }
-
-  if(tipo != "media"){
     app_original<-st_buffer(mapa_hidro, appm, endCapStyle = "FLAT")
-  }else{
-    rios<-st_buffer(mapa_RMS %>% dplyr::select((1:5)), 20, endCapStyle = "FLAT")
+
+    app_original<-rbind(app_original, mapa_NAS)
+    app_original<-app_original %>% group_by(MUNICIPIO) %>% summarize()
+
     if(!is.null(mapa_hidro_pol)){
-    app_original<-rbind(media_poli, rios)
-    }else{app_original<-rios}
-  }
+      app_original<-st_difference(app_original, mapa_hidro_pol)
+    }
 
-  app_original<-rbind(app_original, mapa_NAS)
-  app_original<-app_original %>% group_by(MUNICIPIO) %>% summarize()
+    if(tipo != "out1" & tipo != "out2"){
+      rec_app<-st_intersection(app_original, cars)
+      rec_app<-st_buffer(rec_app, 0)
+    }else{
+      cars<-cars %>% group_by(NOM_MUNICI) %>% summarise()
+      rec_app<-st_difference(app_original, cars)
+      rec_app<-st_buffer(rec_app, 0)
+    }
 
-  if(!is.null(mapa_hidro_pol)){
-    app_original<-st_difference(app_original, mapa_hidro_pol)
-  }
+    uso_app<-st_intersection(uso, rec_app)
+    #uso_app<-uso_app %>% group_by(CLASSE_USO) %>% summarize()
+    uso_app<-st_collection_extract(uso_app, "POLYGON") %>% group_by(CLASSE_USO) %>% summarise()
+    uso_app$C_PROP<-prop
+    uso_app<-uso_app %>% rename ("C_USO" = "CLASSE_USO")
+    uso_app$MUN<-unique(CAR$NOM_MUNICI)
+    uso_app$AREA_HA <- round(as.numeric(st_area(uso_app)/10000),2)
+    uso_app$C_USO<-rm_accent(uso_app$C_USO)
+    uso_app<-st_as_sf(as.data.frame(uso_app))
 
-  if(tipo != "out1" & tipo != "out2"){
-    rec_app<-st_intersection(app_original, cars)
-    rec_app<-st_buffer(rec_app, 0)
-  }else{
-    cars<-cars %>% group_by(NOM_MUNICI) %>% summarise()
-    rec_app<-st_difference(app_original, cars)
-    rec_app<-st_buffer(rec_app, 0)
-  }
-
-  uso_app<-st_intersection(uso, rec_app)
-  #uso_app<-uso_app %>% group_by(CLASSE_USO) %>% summarize()
-  uso_app<-st_collection_extract(uso_app, "POLYGON") %>% group_by(CLASSE_USO) %>% summarise()
-  uso_app$C_PROP<-prop
-  uso_app<-uso_app %>% rename ("C_USO" = "CLASSE_USO")
-  uso_app$MUN<-unique(CAR$NOM_MUNICI)
-  uso_app$AREA_HA <- round(as.numeric(st_area(uso_app)/10000),2)
-  uso_app$C_USO<-rm_accent(uso_app$C_USO)
-  uso_app<-st_as_sf(as.data.frame(uso_app))
-
-  if(is.null(lista.classe)){
-    return(uso_app)
-    break
-  }else if(i < 5){
-    if(is.null(mapa.geral)){
-      mapa.geral<-uso_app
+    if(is.null(lista.classe)){
+      return(uso_app)
+      break
+    }else if(i < 5){
+      if(is.null(mapa.geral)){
+        mapa.geral<-uso_app
+      }else{
+        mapa.geral<-rbind(mapa.geral,uso_app)
+      }
+      i<-i+1
+      tipo<-lista.classe[i]
     }else{
       mapa.geral<-rbind(mapa.geral,uso_app)
+      return(mapa.geral)
+      break
     }
-    i<-i+1
-    tipo<-lista.classe[i]
-  }else{
-    mapa.geral<-rbind(mapa.geral,uso_app)
-    return(mapa.geral)
-    break
-  }
 
   }
 }
+
+res_app_correctpoly<-function(poly){
+  if(!is.null(poly)){
+    poly<-st_buffer(poly, 0)
+  }
+  return(poly)
+}
+

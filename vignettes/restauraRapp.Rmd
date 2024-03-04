@@ -156,7 +156,7 @@ st_write(REST_cena2, dsn="./sua_pasta_de_dados", "OUT_G_APP_BURI_SP",
 Como resultado temos o uso do solo dentro do buffer para restauração e podemos calcular a quantidade de área com vegetação nativa e o que precisa ser recuperado. Deste modo apresentamos a função *resapp_app_info()*, está função é responsavel por retornar três diferentes tipos de resultados: I) as áreas que, separadas por classe de tamanho que precisam ser restauradas ou que se encontram preservadas com informações cartográficas; II) Informações das áreas a serem restauradas ou que se encontram preservadas por classe de tamanho na forma de tabela de dados para impressão; III) Uma tabela de dados contendo as informações do que deve ser resutarado ou se encontra preservado por propriedade.
 
 ```{r, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
-#Para executar o tipo "df" é necessário todos os resultados da função gCARapp()
+#Para executar o tipo "df" é necessário todos os resultados da função resapp_app_buffer()
   dados.CARapp<-resapp_app_info(BURI_APP,BURI_OUTM,BURI_OUTG,tipo="df")
 
 # A opção "all" é executada apenas para os resultados das análises das áreas que possuem CAR.

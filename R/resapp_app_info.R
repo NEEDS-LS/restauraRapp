@@ -15,7 +15,7 @@
 #'  ou seja, considerando as áreas sem CAR como grande propriedades. Pode ser NULL.
 #' @param CAR Objeto contendo os polígonos com as áreas das propriedades registradas no CAR.
 #'  Pode ser NULL.
-#' @param tipo Quais informações serão retornadas. "df" para data frame, "all" para retornar
+#' @param tipo Quais informações serão retornadas. "df" para data frame, "tudo" para retornar
 #'  as informações dos polígonos para as propriedades cadastradas e "prop" para o recorte das áreas
 #'  por propriedade cadastrada.
 #' @return Objeto data frame ou sf referente à preservação dentro do buffer criado.
@@ -26,10 +26,10 @@
 #' por propriedade do CAR
 #' @export
 #' @examples
-#' #Para executar o tipo "df" é necessário todos os resultados da função gCARapp()
+#' #Para executar o tipo "df" é necessário todos os resultados da função resapp_app_buffer()
 #' dados.CARapp<-resapp_app_info(CARapp,CARapp_out1,CARapp_out2,tipo="df")
 #'
-#' # A opção "all" é executada apenas para os resultados das análises das áreas que possuem CAR.
+#' # A opção "tudo" é executada apenas para os resultados das análises das áreas que possuem CAR.
 #' poligonos.CARapp<-resapp_app_info(CARapp, tipo="all")
 #'
 #' # Por fim, a opção "prop" leva em consideração apenas os resultados das análises das áreas que
@@ -39,7 +39,7 @@
 
 
 resapp_app_info<-function(CARapp, CARapp_out1 = NULL, CARapp_out2 = NULL, CAR = NULL, tipo){
-  if(tipo == "all"){
+  if(tipo == "tudo"){
     CARapp$C_USO<-rm_accent(CARapp$C_USO)
     CARapp<-CARapp %>% mutate(SIT =
                                 case_when(C_USO == "agua" ~ "Agua",
