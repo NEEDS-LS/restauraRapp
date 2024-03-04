@@ -16,12 +16,12 @@ resapp_car_class<-function(mapa_CAR){
 
   mapa_CAR<-st_buffer(mapa_CAR, 0)
 
-  mapa_CAR<-mapa_CAR[mapa_CAR$SITUACAO != "CA",]
+  mapa_CAR<-mapa_CAR[mapa_CAR$ind_status != "CA",]
 
-  micro<-mapa_CAR[mapa_CAR$NUM_MODULO<1,]
-  pequena_1_2<-mapa_CAR[mapa_CAR$NUM_MODULO>=1 & mapa_CAR$NUM_MODULO<2,]
-  pequena_2_4<-mapa_CAR[mapa_CAR$NUM_MODULO>=2 & mapa_CAR$NUM_MODULO<4,]
-  grande<-mapa_CAR[mapa_CAR$NUM_MODULO>=4,]
+  micro<-mapa_CAR[mapa_CAR$mod_fiscal<1,]
+  pequena_1_2<-mapa_CAR[mapa_CAR$mod_fiscal>=1 & mapa_CAR$mod_fiscal<2,]
+  pequena_2_4<-mapa_CAR[mapa_CAR$mod_fiscal>=2 & mapa_CAR$mod_fiscal<4,]
+  grande<-mapa_CAR[mapa_CAR$mod_fiscal>=4,]
 
   nm<-c("Micro", "Pequenas 1 a 2 modulos", "Pequenas 2 a 4 modulos", "Grande")
   lista<-list(micro, pequena_1_2, pequena_2_4, grande, "names" = nm)

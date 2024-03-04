@@ -16,14 +16,14 @@
 
 resapp_car_info<-function(CAR, mun = NULL, tipo = NULL){
 
-  CAR<-CAR[CAR$SITUACAO != "CA",]
+  CAR<-CAR[CAR$ind_status != "CA",]
 
-  CAR<-CAR %>% mutate(classe = case_when(NUM_MODULO < 1 ~ "Micro",
-                                          NUM_MODULO >= 1 & NUM_MODULO < 2 ~
+  CAR<-CAR %>% mutate(classe = case_when(mod_fiscal < 1 ~ "Micro",
+                                         mod_fiscal >= 1 & mod_fiscal < 2 ~
                                             "Pequena (1 a 2 modulos)",
-                                          NUM_MODULO >= 2 & NUM_MODULO < 4 ~
+                                         mod_fiscal >= 2 & mod_fiscal < 4 ~
                                             "Pequena (2 a 4 modulos)",
-                                          NUM_MODULO >= 4 ~ "Grande"))
+                                         mod_fiscal >= 4 ~ "Grande"))
   if(!is.null(mun)){
     if(file.exists("./data_use")==FALSE){dir.create("./data_use")}
     if(file.exists("./data_use/gadm36_BRA_2_pk.rds")==FALSE){
@@ -43,8 +43,8 @@ resapp_car_info<-function(CAR, mun = NULL, tipo = NULL){
   }
 
   car.map<-CAR %>% group_by(classe) %>% summarise(num_prop = n(),
-                                                  tam_medio_ha = round(mean(NUM_AREA),2),
-                                                  desvio_ha = round(sd(NUM_AREA),2))
+                                                  tam_medio_ha = round(mean(num_area),2),
+                                                  desvio_ha = round(sd(num_area),2))
   car.map<-st_make_valid(car.map)
   car.map$area_ha<-as.numeric(round(units::set_units(st_area(car.map), value = ha),2))
   total.car<-car.map %>% summarise(t=n())

@@ -138,7 +138,7 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     uso_app<-st_collection_extract(uso_app, "POLYGON") %>% group_by(CLASSE_USO) %>% summarise()
     uso_app$C_PROP<-prop
     uso_app<-uso_app %>% rename ("C_USO" = "CLASSE_USO")
-    uso_app$MUN<-unique(CAR$NOM_MUNICI)
+    uso_app$MUN<-unique(CAR$municipio)
     uso_app$AREA_HA <- round(as.numeric(st_area(uso_app)/10000),2)
     uso_app$C_USO<-rm_accent(uso_app$C_USO)
     uso_app<-st_as_sf(as.data.frame(uso_app))
