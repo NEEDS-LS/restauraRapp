@@ -128,7 +128,7 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
       rec_app<-st_intersection(app_original, cars)
       rec_app<-st_buffer(rec_app, 0)
     }else{
-      cars<-cars %>% group_by(NOM_MUNICI) %>% summarise()
+      cars<-cars %>% group_by(municipio) %>% summarise()
       rec_app<-st_difference(app_original, cars)
       rec_app<-st_buffer(rec_app, 0)
     }
