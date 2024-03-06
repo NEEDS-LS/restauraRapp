@@ -74,8 +74,8 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     tipo<-lista.classe[1]
     i<-1
     prop<-NA
-
   }
+
   repeat{
     if(tipo == "micro"){
 
@@ -103,13 +103,13 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
 
     }else if(tipo == "out1"){
 
-      cars<-CAR[CAR$SITUACAO!="CA",]
+      cars<-CAR[CAR$ind_status!="CA",]
       appm<-5
       prop<-"Sem CAR (Micro)"
 
     }else if(tipo == "out2"){
 
-      cars<-CAR[CAR$SITUACAO!="CA",]
+      cars<-CAR[CAR$ind_status!="CA",]
       appm<-30
       prop<-"Sem CAR (Grande)"
 
@@ -154,7 +154,7 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
       }
       i<-i+1
       tipo<-lista.classe[i]
-    }else{
+    }else if( i == 4){
       mapa.geral<-rbind(mapa.geral,uso_app)
       return(mapa.geral)
       break
@@ -162,6 +162,7 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
 
   }
 }
+
 
 res_app_correctpoly<-function(poly){
   if(!is.null(poly)){
