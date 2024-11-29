@@ -21,10 +21,15 @@
 
 resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CAR,uso,tipo){
 
+  # CAR<-mapa_CAR
+  # uso<-mapa_USO
+  # tipo<-"grande"
+  
   CAR<-res_app_correctpoly(CAR)
   uso<-res_app_correctpoly(uso)
 
   propriedades<-resapp_car_class(CAR)
+
 
   if(!is.null(mapa_RMD)){ #verifica se existe os rios de margem dupla
     mapa_RMD<-res_app_correctpoly(mapa_RMD) #corrige os poligonos
@@ -34,16 +39,16 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
         if(length(mapa_MDA$geometry)==0){ #verifica se existe massas d'água de origem natural
           #caso não tenha usa apenas os rios de margem dupla
           mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
-          mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
+          mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
         }else{
           #caso tenha junta todos os poligonos pra formar a hidrografia para o buffer
           mapa_hidro_pol<-rbind(mapa_MDA %>% dplyr::select((1:5)), mapa_RMD %>% dplyr::select((1:5)))
-          mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
+          mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
         }
       }else{
         #Caso as massas d'água sejam NULL, cria a hidrografia apenas com os rios de margem dupla
         mapa_hidro_pol<-mapa_RMD %>% dplyr::select((1:5))
-        mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
+        mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
       }
     }else{ #aqui é caso não exista rios de margem dupla
       if(!is.null(mapa_MDA)){ #verifica novamente a existencia de massas d'água e corrige
@@ -55,7 +60,8 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
         }else{
           #caso exista cria apenas com as MDA
           mapa_hidro_pol<-mapa_MDA %>% dplyr::select((1:5))
-          mapa_hidro<-rbind(mapa_hidro_pol, mapa_RMS %>% dplyr::select((1:5)))
+          mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
+
         }
       }else{ #caso tudo seja NULL usa apenas os RMS
         mapa_hidro<-mapa_RMS %>% dplyr::select((1:5))
@@ -110,12 +116,30 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     }else if(tipo == "out2"){
 
       cars<-CAR[CAR$ind_status!="CA",]
-      appm<-30
+      appm<-20
       prop<-"Sem CAR (Grande)"
 
     }
 
-    app_original<-st_buffer(mapa_hidro, appm, endCapStyle = "FLAT")
+    if(tipo == "grande" | tipo == "out2"){
+      if(!is.null(mapa_hidro_pol)){
+        mapa_hidro_pol<-st_buffer(mapa_hidro_pol, 30, endCapStyle = "FLAT")
+        mapa_hidro<-st_buffer(mapa_hidro, appm, endCapStyle = "FLAT")
+        app_original<-rbind(mapa_hidro_pol, mapa_hidro)
+      }else{
+        mapa_hidro<-st_buffer(mapa_hidro, appm, endCapStyle = "FLAT")
+        app_original<-mapa_hidro
+      }
+    }else{
+      if(!is.null(mapa_hidro_pol)){
+        app_original<-rbind(mapa_hidro_pol, mapa_hidro)
+        app_original<-st_buffer(app_original, appm, endCapStyle = "FLAT")
+
+      }else{
+        app_original<-mapa_hidro
+        app_original<-st_buffer(app_original, appm, endCapStyle = "FLAT")
+      }
+    }
 
     app_original<-rbind(app_original, mapa_NAS)
     app_original<-app_original %>% group_by(MUNICIPIO) %>% summarize()
@@ -123,7 +147,8 @@ resapp_app_buffer<-function(mapa_MDA = NULL,mapa_RMS,mapa_RMD = NULL,mapa_NAS,CA
     if(!is.null(mapa_hidro_pol)){
       app_original<-st_difference(app_original, mapa_hidro_pol)
     }
-
+    
+plot(app_original$geometry)
     if(tipo != "out1" & tipo != "out2"){
       rec_app<-st_intersection(app_original, cars)
       rec_app<-st_buffer(rec_app, 0)

@@ -13,7 +13,7 @@
 
 resapp_app_kml<-function(app_buffer, municipio = NULL, estado = NULL){
 
-  sep_app<-resapp_app_info(app_buffer, tipo = "all")
+  sep_app<-resapp_app_info(app_buffer, tipo = "tudo")
 
   sep_app<-sep_app[sep_app$SIT != "Agua",]
 
@@ -24,7 +24,6 @@ resapp_app_kml<-function(app_buffer, municipio = NULL, estado = NULL){
     estado<-"resapp"
   }
 
-  sep_app<-as_Spatial(sep_app)
   if(!dir.exists("./KML")){
     dir.create("./KML")
     dir.create(paste("./KML/",municipio,"_",estado,"_KML", sep = ""))
@@ -32,33 +31,29 @@ resapp_app_kml<-function(app_buffer, municipio = NULL, estado = NULL){
     dir.create(paste("./KML/",municipio,"_",estado,"_KML", sep = ""))
   }
 
-  kml(sep_app[sep_app$C_PROP == "Micro",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/micro_5m_app_",municipio,"_",estado,".kml",
-                      sep = ""))
+  st_write(sep_app[sep_app$C_PROP == "Micro",],
+           paste("./KML/",municipio,"_",estado,"_KML/micro_5m_app_",municipio,"_",estado,".kml",sep = ""))
 
-  kml(sep_app[sep_app$C_PROP == "Pequenas 1 a 2 modulos",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/peq12_8m_app_",municipio,"_",estado,".kml",
-                      sep = ""))
+  st_write(sep_app[sep_app$C_PROP == "Pequenas 1 a 2 modulos",],
+           paste("./KML/",municipio,"_",estado,"_KML/peq12_8m_app_",municipio,"_",estado,".kml",sep = ""))
 
-  kml(sep_app[sep_app$C_PROP == "Pequenas 2 a 4 modulos",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/peq24_15m_app_",municipio,"_",estado,".kml",
-                      sep = ""))
+  st_write(sep_app[sep_app$C_PROP == "Pequenas 2 a 4 modulos",],
+           paste("./KML/",municipio,"_",estado,"_KML/peq24_15m_app_",municipio,"_",estado,".kml",sep = ""))
 
-  kml(sep_app[sep_app$C_PROP == "Grande",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/grande_30m_app_",municipio,"_",estado,".kml",
-                      sep = ""))
+  st_write(sep_app[sep_app$C_PROP == "Grande",],
+           paste("./KML/",municipio,"_",estado,"_KML/grande_20m_app_",municipio,"_",estado,".kml",sep = ""))
 
   res_app<-sep_app[sep_app$SIT=="Restaurar",]
 
-  kml(res_app[res_app$C_PROP == "Micro",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/micro_5m_restaurar_",municipio,"_",estado,".kml", sep = ""))
+  st_write(res_app[res_app$C_PROP == "Micro",],
+           paste("./KML/",municipio,"_",estado,"_KML/micro_5m_restaurar_",municipio,"_",estado,".kml", sep = ""))
 
-  kml(res_app[res_app$C_PROP == "Pequenas 1 a 2 modulos",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/peq12_8m_restaurar_",municipio,"_",estado,".kml", sep = ""))
+  st_write(res_app[res_app$C_PROP == "Pequenas 1 a 2 modulos",],
+           paste("./KML/",municipio,"_",estado,"_KML/peq12_8m_restaurar_",municipio,"_",estado,".kml", sep = ""))
 
-  kml(res_app[res_app$C_PROP == "Pequenas 2 a 4 modulos",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/peq24_15m_restaurar_",municipio,"_",estado,".kml", sep = ""))
+  st_write(res_app[res_app$C_PROP == "Pequenas 2 a 4 modulos",],
+           paste("./KML/",municipio,"_",estado,"_KML/peq24_15m_restaurar_",municipio,"_",estado,".kml", sep = ""))
 
-  kml(res_app[res_app$C_PROP == "Grande",],
-      file.name=paste("./KML/",municipio,"_",estado,"_KML/grande_30m_restaurar_",municipio,"_",estado,".kml", sep = ""))
+  st_write(res_app[res_app$C_PROP == "Grande",],
+           paste("./KML/",municipio,"_",estado,"_KML/grande_20m_restaurar_",municipio,"_",estado,".kml", sep = ""))
 }
