@@ -81,7 +81,7 @@ função base do R *getwd()*.
 
 resapp_fbds_dados("SP","CAMPINA_DO_MONTE_ALEGRE")
 
-#caso tenha executado a função sem ter criado um pacote, executar a linha abaixo e veja em que 
+#caso tenha executado a função sem ter criado um projeto, executar a linha abaixo e veja em que 
 #diretório seus dados foram salvos
 
 getwd()
