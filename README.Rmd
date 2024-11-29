@@ -74,17 +74,17 @@ Os dados do CAR estão disponiveis na plataforma do [SICAR](https://car.gov.br/p
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
 #carrega o arquivo de usos e cobertura do solo na memória do R
-CMA_USO<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_USO")
+USO<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_USO")
 #carrega o arquivo de massas d'água na memória do R
-CMA_MDA<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_MASSAS_DAGUA")
+MDA<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_MASSAS_DAGUA")
 #carrega o arquivo de rios de margem simples (< 10 metros) na memória do R
-CMA_RMS<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_RIOS_SIMPLES")
+RMS<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_RIOS_SIMPLES")
 #carrega o arquivo de rios de margem dupla (> 10 metros) na memória do R
-CMA_RMD<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_RIOS_DUPLOS")
+RMD<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_RIOS_DUPLOS")
 #carrega o arquivo de nascentes na memória do R
-CMA_NAS<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_NASCENTES")
+NAS<-st_read("seu diretório de dados/data/FBDS_SEU_MUNICIPIO", layer="ESTADO_CODIGODOMUNICIPIO_NASCENTES")
 #carrega o arquivo do CAR na memória do R
-SP_CAR<-st_read("seu diretório de dados", layer="AREA_IMOVEL_1") #AREA_IMOVEL_1 é o nome do arquivo baixado do SICAR
+CAR<-st_read("seu diretório de dados", layer="AREA_IMOVEL_1") #AREA_IMOVEL_1 é o nome do arquivo baixado do SICAR
 
 ```
 
